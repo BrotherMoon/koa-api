@@ -14,7 +14,10 @@ app.use(json());
 /*解析http请求体*/
 app.use(bodyParser());
 /*log*/
-app.use(convert(logger()))
+app.use(convert(logger()));
+/*自定义中间件*/
+app.use(require('./src/middlewares/response'));
+app.use(require('./src/middlewares/catch'));
 /*路由*/
 app.use(router.routes())
     .use(router.allowedMethods());
