@@ -10,5 +10,7 @@ router.get('/user', userCtrl.findUsers)
 
 /*博客文章相关路由*/
 router.post('/blog', blogCtrl.createBlog)
+    .get('/blog', blogCtrl.findBlogs)
+    .delete('/blog', blogCtrl.deleteBolg)
 
 module.exports = router;

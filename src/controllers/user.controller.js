@@ -20,7 +20,7 @@ module.exports = {
         const {name, password} = ctx.request.body;
         if (!name || !password) return ctx.error({msg: '用户名还有密码不能为空'});
         const data = await userModel.findOne({name, password}, {password: 0});
-        if (!data) return ctx.error({msg: '请输入正确的用户名还有密码', status: 401});
+        if (!data) return ctx.error({msg: '请输入正确的用户名还有密码'});
         ctx.success({data, msg: '登录成功'})
     }
 }
