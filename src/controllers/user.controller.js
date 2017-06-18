@@ -12,7 +12,7 @@ module.exports = {
     createUser: async(ctx, next) => {
         const {name, password} = ctx.request.body;
         if (!name || !password) return ctx.error({msg: '用户名还有密码不能为空'});
-        const newUser = new userModel({nam: name, password});
+        const newUser = new userModel({name, password});
         const data = await newUser.save();
         ctx.success({data, msg: '创建用户成功'});
     },
