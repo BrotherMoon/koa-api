@@ -13,6 +13,6 @@ module.exports = async(ctx, next) => {
         if (typeof(err) == 'string') {
             ctx.error({msg: new Error(err)});
         }
-        ctx.error({msg: '服务器错误!', error: err, status: 400});
+        ctx.error({msg: '服务器错误!', error: err, status: 500});
     }
 }
