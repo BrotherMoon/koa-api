@@ -1,4 +1,6 @@
 const userModel = require('../models/user.model');
+const jwt = require('jsonwebtoken');
+
 module.exports = {
     findUsers: async ctx => {
         const data = await userModel.find();
@@ -21,6 +23,7 @@ module.exports = {
         if (!name || !password) return ctx.error({msg: '用户名还有密码不能为空'});
         const data = await userModel.findOne({name, password}, {password: 0});
         if (!data) return ctx.error({msg: '请输入正确的用户名还有密码'});
-        ctx.success({data, msg: '登录成功'})
+        const newData = Object.assign(data._doc, {token: jwt.sign({id: data._doc.id}, 'xuwenchao', {expiresIn: '10s'})});
+        ctx.success({data: newData, msg: '登录成功'});
     }
 }

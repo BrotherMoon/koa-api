@@ -14,5 +14,6 @@ module.exports = async(ctx, next) => {
             ctx.error({msg: new Error(err)});
         }
         ctx.error({msg: '服务器错误!', error: err, status: 500});
+        console.error(err);
     }
 }
