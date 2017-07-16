@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../../config');
-mongoose.connect(config.mongo.uri);
+mongoose.connect(config.mongo.uri, {useMongoClient: true});
 
 // 连接成功
 mongoose.connection.on('connected', function () {
