@@ -9,14 +9,13 @@
  * @ 调用ctx.error()   响应错误
  * @ 调用ctx.success()  响应成功
  */
-
 module.exports = async(ctx, next) => {
-    ctx.error = ({data, msg, status, error}) => {
-        ctx.status = status || 400;
-        ctx.body = {msg, data, error};
+    ctx.error = ({data, msg='fail', status, error}) => {
+        ctx.status = status || 400
+        ctx.body = {msg, data, error}
     }
-    ctx.success = ({data, msg}) => {
-        ctx.body = {msg, data};
+    ctx.success = ({data, msg='success'}) => {
+        ctx.body = {msg, data}
     }
     await next()
 }
