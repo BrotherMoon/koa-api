@@ -11,5 +11,4 @@ router.get('/user', userCtrl.findUsers)
 router.post('/blog', blogCtrl.createBlog)
     .get('/blog', blogCtrl.findBlogs)
     .delete('/blog', blogCtrl.deleteBolg)
-
 module.exports = router
