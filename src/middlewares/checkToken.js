@@ -1,20 +1,17 @@
-const jwt = require('jsonwebtoken');
+/**
+ * 校验token认证
+ */
+const jwt = require('jsonwebtoken')
 module.exports = async(ctx, next) => {
-    if (ctx.request.header['authorization']) {
-        let token = ctx.request.header['authorization']
-        let decoded = jwt.decode(token, 'xuwenchao');
-        if (token && decoded.exp <= new Date() / 1000) {
-            ctx.status = 401;
-            ctx.body = {
-                message: 'token过期'
-            };
-        } else {
-            return next();
-        }
+  const token = ctx.request.header['authorization']
+  if (token) {
+    const decoded = jwt.decode(token, 'xuwenchao')
+    if (decoded.exp <= new Date() / 1000) {
+      ctx.error({msg: 'token have expired', code: 1000, status: 401})
     } else {
-        ctx.status = 401;
-        ctx.body = {
-            message: '没有token'
-        }
+      return next()
     }
-};
+  } else {
+    ctx.error({msg: 'unauthorized', code: 1000, status: 401})
+  }
+}

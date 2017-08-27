@@ -1,6 +1,5 @@
-const mongoose = require('./db');
-const Schema = mongoose.Schema;
-
+const mongoose = require('./db')
+const Schema = mongoose.Schema
 const BlogSchema = new Schema({
     title: {type: String, required: true},
     authorId: {type: String, required: true},
@@ -11,6 +10,5 @@ const BlogSchema = new Schema({
     updatedAt: {type: Date, default: Date.now}
 }, {
     versionKey: false
-});
-
-module.exports = mongoose.model('blog', BlogSchema, 'blogs');
+})
+module.exports = mongoose.model('blog', BlogSchema, 'blogs')
