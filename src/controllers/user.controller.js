@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model')
 const jwt = require('jsonwebtoken')
+const config = require('../../config')
 module.exports = {
   // 查找所有用户
   findUsers: async ctx => {
@@ -40,7 +41,7 @@ module.exports = {
     // 创建后续用于请求验证的token
     const token = jwt.sign({
       id: data.id
-    }, 'xuwenchao', {expiresIn: 100})
+    }, config.tokenSecret, {expiresIn: 100})
     ctx.success({
       data: {
         user: data,

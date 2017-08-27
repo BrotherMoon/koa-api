@@ -9,7 +9,6 @@ const config = require('./config')
 const router = require('./src/routes')
 const cors = require('koa-cors')
 const koaStatic = require('koa-static')
-
 // 报错
 onerror(app)
 // 格式化 response json
@@ -29,3 +28,4 @@ app.use(koaStatic('doc'))
 app.use(router.routes())
     .use(router.allowedMethods())
 app.listen(3001)
+module.exports = app

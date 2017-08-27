@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./src/test"
   },
   "author": "xuwenchao",
   "license": "ISC",
@@ -21,7 +21,10 @@
     "koa-router": "^7.2.0",
     "koa-scheme": "^2.2.1",
     "koa-static": "^4.0.1",
+    "mocha": "^3.5.0",
     "mongoose": "^4.10.6",
+    "should": "^11.2.1",
+    "supertest": "^3.0.0",
     "validator": "^8.0.0"
   }
 }
