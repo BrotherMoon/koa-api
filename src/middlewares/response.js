@@ -7,7 +7,7 @@
  * @ 调用ctx.success()  响应成功
  */
 module.exports = async(ctx, next) => {
-    ctx.error = ({msg = 'error', code, status = 400}) => {
+    ctx.error = ({msg = 'error', code = 1002, status = 400}) => {
         ctx.status = status
         ctx.body = {msg, code}
     }

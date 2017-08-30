@@ -19,7 +19,7 @@ module.exports = {
   createUser: async(ctx, next) => {
     const {name, password} = ctx.request.body
     if (!name || !password)
-      return ctx.error({msg: 'name and password is required', code: 1002})
+      return ctx.error({msg: 'name and password is required'})
     const newUser = new userModel({name, password})
     const data = await newUser.save()
     ctx.success({data, status: 201})
@@ -29,7 +29,7 @@ module.exports = {
     const {name, password} = ctx.request.body
     // 校验用户名还有密码
     if (!name || !password)
-      return ctx.error({msg: 'name and password is required', code: 1002})
+      return ctx.error({msg: 'name and password is required'})
     // 根据name查找用户
     const data = await userModel.findOne({name})
     if (!data)
@@ -38,7 +38,7 @@ module.exports = {
       return ctx.error({msg: 'wrong password', code: 1001, status: 404})
     // 删除password属性，防止密码泄露
     data.password = undefined
-    // 创建后续用于请求验证的token
+    // 创建并返回后续用于请求验证的token以及用户信息
     const token = jwt.sign({
       id: data.id
     }, config.tokenSecret, {expiresIn: 100})
