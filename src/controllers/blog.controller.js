@@ -12,14 +12,16 @@ module.exports = {
     },
     // 根据标题还有内容进行查找博客
     findBlogs: async ctx => {
-        const {keyword} = ctx.query
+        const {keyword, authorId} = ctx.query
         const regex = new RegExp(keyword, 'i')
-        const data = await blogModel.find({
+        let whereStr = {
           $or: [
             {title: {$regex: regex}},
             {content: {$regex: regex}}
           ]
-        })
+        }
+        authorId && Object.assign(whereStr, {authorId})
+        const data = await blogModel.find(whereStr)
         ctx.success({data})
     },
     // 根据博客id删除博客
