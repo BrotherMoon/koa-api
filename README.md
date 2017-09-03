@@ -26,9 +26,10 @@
 | 1000  | UNAUTHORIZED | 没有权限 | 401 |
 | 1001  | token have expired | token 已经过期 | 401 |
 | 1002  | missing/invalid args | 参数缺失/无效 | 400 |
-| 1003  | user not found | 用户不存在 | 404 |
+| 1003  | user not found | 用户不存在 | 400 |
 | 1004  | wrong password | 密码错误 | 400 |
-| 1005  | user name already exists | 用户名已存在 | 400 |
+| 1005  | user name already exists | 用户名被占用 | 400 |
+| 1006  | uri not found | 资源不存在 | 404 |
 
 
 

@@ -46,7 +46,7 @@ module.exports = {
     // 根据name查找用户
     const data = await userModel.findOne({name})
     if (!data)
-      return ctx.error({msg: 'user not found', code: 1003, status: 404})
+      return ctx.error({msg: 'user not found', code: 1003, status: 400})
     if (data.password !== password)
       return ctx.error({msg: 'wrong password', code: 1004})
     // 删除password属性，防止密码泄露
@@ -71,7 +71,7 @@ module.exports = {
     if (!isEmpty(data)) {
       ctx.success({status: 204})
     } else {
-      ctx.error({msg: 'user not found', status: 404})
+      ctx.error({msg: 'user not found', code: 1003, status: 400})
     }
   }
 }
