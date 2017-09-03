@@ -8,7 +8,7 @@ module.exports = async(ctx, next) => {
   if (token) {
     const decoded = jwt.decode(token, config.tokenSecret)
     if (decoded.exp <= new Date() / 1000) {
-      ctx.error({msg: 'token have expired', code: 1000, status: 401})
+      ctx.error({msg: 'token have expired', code: 1001,  status: 401})
     } else {
       return next()
     }

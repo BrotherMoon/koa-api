@@ -8,47 +8,56 @@ const token = jwt.sign({
   id: '89124819023j12jsadas'
 }, config.tokenSecret, {expiresIn: 100})
 describe('testing user api', () => {
-  it('GET /user', (done) => {
+  let user = {
+    name: new Date().getTime().toString(),
+    password: '123456'
+  }
+  it('POST /users', (done) => {
     request()
-    .get('/user')
+    .post('/users')
+    .send(user)
+    .expect(201)
+    .end((err, res) => {
+      res.body.should.have.property('name', user.name)
+      res.body.should.have.property('password', user.password)
+      console.log(res.body)
+      Object.assign(user, {_id: res.body._id})
+      console.log(user)
+      done(err)
+    })
+  })
+  it('GET /users', (done) => {
+    request()
+    .get('/users')
     .set('authorization', token)
     .expect(200, done)
   })
-  it('GET /user:name', (done) => {
+  it(`GET /users:name`, (done) => {
     request()
-    .get('/user/xuwenchao')
+    .get(`/users/${user.name}`)
     .set('authorization', token)
     .expect(200)
     .end((err, res) => {
-      if (err) return done(err)
       res.body.forEach(item => {
-        item.should.have.property('name', 'xuwenchao')
+        item.should.have.property('name', user.name)
       })
-      done()
+      done(err)
     })
   })
-  it('POST /user', (done) => {
+  it('POST /users/login', (done) => {
     request()
-    .post('/user')
-    .send({
-      name: 'test',
-      password: '123456'
-    })
-    .expect(201, done)
-  })
-  it('POST /user/login', (done) => {
-    request()
-    .post('/user/login')
-    .send({
-      name:'test',
-      password: '123456'
-    })
+    .post('/users/login')
+    .send(user)
     .expect(200)
     .end((err, res) => {
-      if (err) return done(err)
       res.body.should.have.property('user')
       res.body.should.have.property('token')
-      done()
+      done(err)
     })
+  })
+  it(`DELETE /user:userId`, (done) => {
+    request()
+    .delete(`/users/${user._id}`)
+    .expect(204, done)
   })
 })

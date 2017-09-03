@@ -7,12 +7,12 @@ module.exports = async(ctx, next) => {
         await next()
     } catch (err) {
         if (!err) {
-            ctx.error({msg: new Error('未知错误!'), code: 999})
+            ctx.error({msg: new Error('unknow error!'), status: 500})
         }
         if (typeof(err) == 'string') {
-            ctx.error({msg: new Error(err)})
+            ctx.error({msg: new Error(err), status: 500})
         }
-        ctx.error({msg: '服务器错误!', status: 500})
+        ctx.error({msg: 'internal server error!', status: 500})
         console.error(err)
     }
 }

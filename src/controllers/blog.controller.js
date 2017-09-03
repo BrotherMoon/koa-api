@@ -24,9 +24,16 @@ module.exports = {
         const data = await blogModel.find(whereStr)
         ctx.success({data})
     },
+    // 更新博客内容
+    updateBlog: async ctx => {
+      const {blogId} = ctx.request.body
+      const {title, content, tag, private} = ctx.request.body
+      console.log(blogId)
+      // const data = await blogModel.update({_id: blogId}, )
+    },
     // 根据博客id删除博客
     deleteBolg: async ctx => {
-        const {id} = ctx.params
+        const {blogId} = ctx.params
         const data = await blogModel.remove({_id: id})
         data.result.n > 0 ? ctx.success({data: 'successfully delete'}) : ctx.error({msg: 'delete failed', code: 1001})
     }

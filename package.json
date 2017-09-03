@@ -21,6 +21,7 @@
     "koa-router": "^7.2.0",
     "koa-scheme": "^2.2.1",
     "koa-static": "^4.0.1",
+    "lodash": "^4.17.4",
     "mocha": "^3.5.0",
     "mongoose": "^4.10.6",
     "should": "^11.2.1",
