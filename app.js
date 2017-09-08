@@ -27,5 +27,8 @@ app.use(koaStatic('doc'))
 // 路由
 app.use(router.routes())
     .use(router.allowedMethods())
-app.listen(3001)
-module.exports = app
+if (module.parent) {
+  module.exports = app
+} else {
+  app.listen(config.port, () => console.log(`^_^: koa-api listening on port -> ${config.port}`))
+}
