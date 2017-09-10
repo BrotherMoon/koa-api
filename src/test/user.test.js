@@ -59,13 +59,46 @@ describe('testing user api', () => {
       .send({password: '123456'})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg')
+        res.body.should.have.property('msg', 'missing name')
+        res.body.should.have.property('code', 1002)
+        done(err)
+      })
+    })
+    it('should get 400 and missing password wraning', (done) => {
+      request()
+      .post('/users')
+      .send({name: new Date().getTime().toString()})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'missing password')
+        res.body.should.have.property('code', 1002)
+        done(err)
+      })
+    })
+    it('should get 400 and the illegal name warning', (done) => {
+      request()
+      .post('/users')
+      .send({name: '12345678901234566', password: '123456'})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'the length of name must between 1 and 15')
+        res.body.should.have.property('code', 1002)
+        done(err)
+      })
+    })
+    it('should get 400 and the illegal password warning', (done) => {
+      request()
+      .post('/users')
+      .send({name: new Date().getTime().toString(), password: '1233'})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'the password need to have at least 6 characters')
         res.body.should.have.property('code', 1002)
         done(err)
       })
     })
   })
-  // 测试获取所有用户接口
+  // 测试获取所有用户数据接口
   describe('GET /users', () => {
     it('should get 200 and an array', (done) => {
       request()
@@ -109,6 +142,17 @@ describe('testing user api', () => {
         done(err)
       })
     })
+    it('should get 400 and wrong password warning', (done) => {
+      request()
+      .post('/users/login')
+      .send({name: userForTest1.name, password: '1234567'})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'wrong password')
+        res.body.should.have.property('code', 1004)
+        done(err)
+      })
+    })
     it('should get 400 and user not found warning', (done) => {
       request()
       .post('/users/login')
@@ -131,6 +175,28 @@ describe('testing user api', () => {
       .delete(`/users/${userForTest2._id}`)
       .set('authorization', token)
       .expect(204, done)
+    })
+    it(`should get 400 and invalid userId warning`, (done) => {
+      request()
+      .delete(`/users/${uuid()}`)
+      .set('authorization', token)
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'invalid userId')
+        res.body.should.have.property('code', 1002)
+        done(err)
+      })
+    })
+    it(`should get 400 and user not found warning`, (done) => {
+      request()
+      .delete(`/users/111111111111111111111111`)
+      .set('authorization', token)
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'user not found')
+        res.body.should.have.property('code', 1003)
+        done(err)
+      })
     })
   })
 })

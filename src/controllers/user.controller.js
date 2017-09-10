@@ -67,6 +67,10 @@ module.exports = {
   // 删除用户
   deleteUser: async ctx => {
     const {userId} = ctx.params
+    // 检测是否是合法的objectid
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
+    }
     const data = await userModel.findOneAndRemove({_id: userId})
     if (!isEmpty(data)) {
       ctx.success({status: 204})
