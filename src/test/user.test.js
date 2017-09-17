@@ -168,6 +168,14 @@ describe('testing user api', () => {
       })
     })
   })
+  // 测试更新用户信息借口接口
+  describe('PUT /users', () => {
+    it('should get 202 and the updated user info', (done) => {
+      request()
+      .put(`/users/${userForTest2._id}`)
+      .expect(204, done)
+    })
+  })
   // 测试删除用户接口
   describe('DELETE /users:userId', () => {
     it(`should get 204`, (done) => {

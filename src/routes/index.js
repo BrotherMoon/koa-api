@@ -7,6 +7,7 @@ router.get('/users', userCtrl.findUsers)
       .get('/users/:name', userCtrl.findUser)
       .post('/users', userCtrl.createUser)
       .post('/users/login', userCtrl.login)
+      .put('/users/:userId', userCtrl.updateUser)
       .del('/users/:userId', checkToken, userCtrl.deleteUser)
 /*博客文章相关路由*/
 router.post('/blogs', blogCtrl.createBlog)

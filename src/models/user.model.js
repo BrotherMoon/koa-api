@@ -6,10 +6,9 @@ const UserSchema = new Schema({
     profile: {type: String, default: '你还没有填写个人简介'},
     password: {type: String, required: true},
     tags: {type: Array, default: ['无标签']},
-    active: {type: Boolean, default: true},
-    createdAt: {type: Date, default: Date.now},
-    updatedAt: {type: Date, default: Date.now}
+    active: {type: Number, default: 1}
 }, {
-    versionKey: false
+    versionKey: false,
+    timestamps: true
 })
 module.exports = mongoose.model('user', UserSchema, 'users')

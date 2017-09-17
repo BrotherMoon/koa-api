@@ -2,11 +2,11 @@ const blogModel = require('../models/blog.model')
 module.exports = {
     // 新建一篇博客
     createBlog: async ctx => {
-        const {title, authorId, content, tag, private} = ctx.request.body
+        const {title, author, content, tag, private} = ctx.request.body
         if (!title) return ctx.error({msg: 'title is required'})
-        if (!authorId) return ctx.error({msg: 'authorId is required'})
+        if (!author) return ctx.error({msg: 'authorId is required'})
         if (!content) return ctx.error({msg: 'content is required'})
-        const newBlog = new blogModel({title, authorId, content, tag, private})
+        const newBlog = new blogModel({title, author, content, tag, private})
         const data = await newBlog.save()
         ctx.success({data, status: 201})
     },
@@ -20,14 +20,15 @@ module.exports = {
             {content: {$regex: regex}}
           ]
         }
-        authorId && Object.assign(whereStr, {authorId})
-        const data = await blogModel.find(whereStr)
+        authorId && Object.assign(whereStr, {author})
+        const data = await blogModel.find(whereStr).populate({path: 'author', select: {id: 1, name: 1}})
         ctx.success({data})
     },
     // 更新博客内容
     updateBlog: async ctx => {
       const {blogId} = ctx.request.body
       const {title, content, tag, private} = ctx.request.body
+      console.log()
       console.log(blogId)
       // const data = await blogModel.update({_id: blogId}, )
     },

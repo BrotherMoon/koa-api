@@ -30,23 +30,4 @@
 | 1004  | wrong password | 密码错误 | 400 |
 | 1005  | user name already exists | 用户名被占用 | 400 |
 | 1006  | uri not found | 资源不存在 | 404 |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    | 请求成功        |
+| 1007  | update failed | 更新资源失败 | 400 |
