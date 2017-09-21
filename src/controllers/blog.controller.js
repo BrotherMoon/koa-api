@@ -1,14 +1,30 @@
 const blogModel = require('../models/blog.model')
+const _ = require('lodash')
+const validator = require('validator')
 module.exports = {
     // 新建一篇博客
     createBlog: async ctx => {
         const {title, author, content, tag, private} = ctx.request.body
-        if (!title) return ctx.error({msg: 'title is required'})
-        if (!author) return ctx.error({msg: 'authorId is required'})
-        if (!content) return ctx.error({msg: 'content is required'})
+        // 参数校验
+        let argError = ''
+        if (!title) {
+          argError = 'title is required'
+        } else if (!_.isString(title) || title.trim().length > 30){
+          argError = 'the length of title no more than 30 and it must be string'
+        } else if (!author) {
+          argError = 'author is required'
+        } else if (!validator.isMongoId(author)) {
+          argError = 'author must be a valid mongoId'
+        } else if (!content) {
+          argError = 'content is required'
+        } else if (!_.isString(content)) {
+          argError = 'author must be a string'
+        }
+        if (argError) return ctx.error({msg: argError, code: 1002})
+        // 创建博客
         const newBlog = new blogModel({title, author, content, tag, private})
         const data = await newBlog.save()
-        ctx.success({data, status: 201})
+        return data ? ctx.success({data, status: 201}) : ctx.error({msg: 'create failed', code: 1008})
     },
     // 根据标题还有内容进行查找博客
     findBlogs: async ctx => {

@@ -170,10 +170,17 @@ describe('testing user api', () => {
   })
   // 测试更新用户信息借口接口
   describe('PUT /users', () => {
+    it('should get 400 and the invalid password warning', (done) => {
+      request()
+      .put(`/users/${userForTest2._id}`)
+      .send({password: 111111})
+      .expect(400, done)
+    })
     it('should get 202 and the updated user info', (done) => {
       request()
       .put(`/users/${userForTest2._id}`)
-      .expect(204, done)
+      .send({password: '111111'})
+      .expect(202, done)
     })
   })
   // 测试删除用户接口

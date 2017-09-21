@@ -38,7 +38,7 @@ module.exports = {
     // 创建用户
     const newUser = new userModel({name, password})
     const data = await newUser.save()
-    ctx.success({data, status: 201})
+    return data ? ctx.success({data, status: 201}) : ctx.error({msg: 'create failed', code: 1008})
   },
   // 用户登录
   login: async ctx => {
@@ -69,14 +69,13 @@ module.exports = {
     const {userId} = ctx.params
     const {password, active, profile, avatar} = ctx.request.body
     // 检测是否是合法的objectid
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!validator.isMongoId(userId)) {
       return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
     }
     // 参数校验
     let argError = ''
-    console.log(typeof active, _.isNil([0, 1].find(num => num === active)), [0, 1].find(num => num === active))
-    if (password && password.trim().length < 6) {
-     argError = 'the password need to have at least 6 characters'
+    if (password && (!_.isString(password) || password.trim().length < 6)) {
+     argError = 'the password must be a string and have at least 6 characters'
    } else if (active && _.isNil([0, 1].find(num => num == active))) {
      argError = 'active need to be one of [0, 1]'
    } else if (profile && profile.trim().length > 30) {
@@ -95,7 +94,7 @@ module.exports = {
   deleteUser: async ctx => {
     const {userId} = ctx.params
     // 检测是否是合法的objectid
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!validator.isMongoId(userId)) {
       return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
     }
     const data = await userModel.findOneAndRemove({_id: userId})
