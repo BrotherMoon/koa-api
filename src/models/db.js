@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const config = require('../../config')
-mongoose.connect(config.mongo.uri, {useMongoClient: true})
+mongoose.connect(config.mongo.uri)
 // 连接成功
 mongoose.connection.on('connected', function () {
-    console.log('Mongoose connection open to ' + config.mongo.uri)
+    console.log('Mongoose connection connected')
 })
 // 连接失败
 mongoose.connection.on('error', function (err) {

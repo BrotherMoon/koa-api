@@ -13,12 +13,12 @@ module.exports = {
           argError = 'the length of title no more than 30 and it must be string'
         } else if (!author) {
           argError = 'author is required'
-        } else if (!validator.isMongoId(author)) {
+        } else if (!_.isString(author) || !validator.isMongoId(author)) {
           argError = 'author must be a valid mongoId'
         } else if (!content) {
           argError = 'content is required'
-        } else if (!_.isString(content)) {
-          argError = 'author must be a string'
+        } else if (!_.isString(content) || !content.trim().length > 0) {
+          argError = 'content must be a string and can`t not be empty'
         }
         if (argError) return ctx.error({msg: argError, code: 1002})
         // 创建博客
