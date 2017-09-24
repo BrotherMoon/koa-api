@@ -24,7 +24,7 @@
 | 状态码 code  | 错误信息         | 含义     | status code |
 | ---- | --------- | --------- | ------------ |
 | 1000  | UNAUTHORIZED | 没有权限 | 401 |
-| 1001  | token have expired | token 已经过期 | 401 |
+| 1001  | jwt expired etc | 无效的token | 401 |
 | 1002  | missing/invalid args | 参数缺失/无效 | 400 |
 | 1003  | user not found | 用户不存在 | 400 |
 | 1004  | wrong password | 密码错误 | 400 |

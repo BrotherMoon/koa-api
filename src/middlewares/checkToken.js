@@ -6,11 +6,11 @@ const config = require('../../config')
 module.exports = async(ctx, next) => {
   const token = ctx.request.header['authorization']
   if (token) {
-    const decoded = jwt.decode(token, config.tokenSecret)
-    if (decoded.exp <= new Date() / 1000) {
-      ctx.error({msg: 'token have expired', code: 1001,  status: 401})
-    } else {
+    try {
+      const decoded = jwt.verify(token, config.tokenSecret)
       return next()
+    } catch (err) {
+      ctx.error({msg: err.message, code: 1001, status: 401})
     }
   } else {
     ctx.error({msg: 'unauthorized', code: 1000, status: 401})

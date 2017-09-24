@@ -5,7 +5,6 @@ const UserSchema = new Schema({
     avatar: {type: String, default: ''},
     profile: {type: String, default: '你还没有填写个人简介'},
     password: {type: String, required: true},
-    tags: {type: Array, default: ['无标签']},
     active: {type: Number, default: 1}
 }, {
     versionKey: false,

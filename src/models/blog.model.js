@@ -5,7 +5,7 @@ const BlogSchema = new Schema({
     author: {type: Schema.Types.ObjectId, ref: 'user'},
     content: {type: String, required: true},
     tag: {type: String, default: '无标签'},
-    private: {type: Boolean, default: false}
+    public: {type: Number, default: 1}
 }, {
     versionKey: false,
     timestamps: true

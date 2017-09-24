@@ -22,7 +22,7 @@ module.exports = {
     let argError = ''
     if (!name) {
       argError = 'missing name'
-    } else if (!(name.trim().length >= 1 && name.trim().length <= 15)) {
+    } else if (!validator.isLength(name.trim(), {min: 0, max: 15})) {
       argError = 'the length of name must between 1 and 15'
     } else if (!password) {
       argError = 'missing password'
@@ -53,7 +53,7 @@ module.exports = {
     data.password = undefined
     // 创建并返回后续用于请求验证的token以及用户信息
     const token = jwt.sign({
-      id: data.id
+      _id: data.id
     }, config.tokenSecret, {
       expiresIn: 60 * 60 * 24
     })
@@ -77,7 +77,7 @@ module.exports = {
     if (password && (!_.isString(password) || password.trim().length < 6)) {
      argError = 'the password must be a string and have at least 6 characters'
    } else if (active && _.isNil([0, 1].find(num => num == active))) {
-     argError = 'active need to be one of [0, 1]'
+     argError = 'active need to be one of 0 and 1'
    } else if (profile && profile.trim().length > 30) {
      argError = 'the length of profile no more than 30'
    }

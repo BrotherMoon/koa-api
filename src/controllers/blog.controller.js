@@ -1,10 +1,12 @@
-const blogModel = require('../models/blog.model')
 const _ = require('lodash')
 const validator = require('validator')
+const jwt = require('jsonwebtoken')
+const config = require('../../config')
+const blogModel = require('../models/blog.model')
 module.exports = {
     // 新建一篇博客
     createBlog: async ctx => {
-        const {title, author, content, tag, private} = ctx.request.body
+        const {title, author, content, tag, public} = ctx.request.body
         // 参数校验
         let argError = ''
         if (!title) {
@@ -19,16 +21,22 @@ module.exports = {
           argError = 'content is required'
         } else if (!_.isString(content) || !content.trim().length > 0) {
           argError = 'content must be a string and can`t not be empty'
+        } else if (public && _.isNil([0, 1].find(num => num == public))) {
+          argError = 'public need to be one of 0 and 1'
+        } else if (tag) {
+          if (!_.isString(tag) || !validator.isLength(tag.trim(), {mix: 1, max: 15})) {
+            argError = 'tag must be a string and the length of tag must between 1 and 15'
+          }
         }
         if (argError) return ctx.error({msg: argError, code: 1002})
         // 创建博客
-        const newBlog = new blogModel({title, author, content, tag, private})
+        const newBlog = new blogModel({title, author, content, tag, public})
         const data = await newBlog.save()
         return data ? ctx.success({data, status: 201}) : ctx.error({msg: 'create failed', code: 1008})
     },
-    // 根据标题还有内容进行查找博客
+    // 查找博客
     findBlogs: async ctx => {
-        const {keyword, authorId} = ctx.query
+        const {keyword, author} = ctx.query
         const regex = new RegExp(keyword, 'i')
         let whereStr = {
           $or: [
@@ -36,14 +44,21 @@ module.exports = {
             {content: {$regex: regex}}
           ]
         }
-        authorId && Object.assign(whereStr, {author})
+        // 如果author不为空,则在对应的author下查找
+        author && Object.assign(whereStr, {author})
+        // 如果需要查询设置为仅自己可见的博客则需要在请求头部传入又服务端颁发的token,然后解析token得出获得权限的_id是否与将要查询的_id是否一致,一致则可查看所有博客
+        const token = ctx.request.header['authorization']
+        // 解析出token中的用户_id
+        const {_id} = token ? jwt.verify(token, config.tokenSecret) : false
+        // 如果token中的_id与author不等则表明不是本人查看,则只能查询设置为公开的博客
+        _id !== author && Object.assign(whereStr, {public: 1})
         const data = await blogModel.find(whereStr).populate({path: 'author', select: {id: 1, name: 1}})
         ctx.success({data})
     },
     // 更新博客内容
     updateBlog: async ctx => {
       const {blogId} = ctx.request.body
-      const {title, content, tag, private} = ctx.request.body
+      const {title, content, tag, public} = ctx.request.body
       console.log()
       console.log(blogId)
       // const data = await blogModel.update({_id: blogId}, )
