@@ -6,11 +6,13 @@ const app = require('../../app')
 const config = require('../../config')
 const userModel = require('../models/user.model')
 const blogModel = require('../models/blog.model')
+const ERROR_MESSAGE = require('../helper/const')
 const request = () => supertest(app.listen())
 let userForTest = {
   name: 'testUser',
   password: '123456'
 }
+let blog = {}
 let token = ''
 describe('testing blog api', () => {
   // 查找用户,若不存在则创建用户
@@ -45,7 +47,11 @@ describe('testing blog api', () => {
         author: userForTest._id,
         content: 'hahah'
       })
-      .expect(201, done)
+      .expect(201)
+      .end((err, res) => {
+        Object.assign(blog, res.body)
+        done()
+      })
     })
     it('should get 400 and missing title waring', (done) => {
       request()
@@ -73,7 +79,7 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'the length of title no more than 30 and it must be string')
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TITLE)
         res.body.should.have.property('code', 1002)
         done()
       })
@@ -135,7 +141,7 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'content must be a string and can`t not be empty')
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT)
         res.body.should.have.property('code', 1002)
         done()
       })
@@ -152,7 +158,7 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'public need to be one of 0 and 1')
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC)
         res.body.should.have.property('code', 1002)
         done()
       })
@@ -169,7 +175,7 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'tag must be a string and the length of tag must between 1 and 15')
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
         res.body.should.have.property('code', 1002)
         done()
       })
@@ -186,7 +192,7 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'tag must be a string and the length of tag must between 1 and 15')
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
         res.body.should.have.property('code', 1002)
         done()
       })
@@ -200,6 +206,76 @@ describe('testing blog api', () => {
       .expect(200)
       .end((err, res) => {
         res.body.should.have.property('length')
+        done()
+      })
+    })
+  })
+  // 测试更新博客接口
+  describe('PUT /blog:blogId', () => {
+    it('should get 202 and updated blog info', (done) => {
+      request()
+      .put(`/blogs/${blog._id}`)
+      .set('authorization', token)
+      .send({title: 'updated blog'})
+      .expect(202, done)
+    })
+    it('should get 400 and illegal title waring', (done) => {
+      request()
+      .put(`/blogs/${blog._id}`)
+      .set('authorization', token)
+      .send({title: 'uaS8DUJ09ASJDPAJSPODJKPOASKJDASJK;DJKASAsdNLKNMLKMLK'})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TITLE)
+        res.body.should.have.property('code', 1002)
+        done()
+      })
+    })
+    it('should get 400 and illegal content waring', (done) => {
+      request()
+      .put(`/blogs/${blog._id}`)
+      .set('authorization', token)
+      .send({content: ' '})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT)
+        res.body.should.have.property('code', 1002)
+        done()
+      })
+    })
+    it('should get 400 and illegal public waring', (done) => {
+      request()
+      .put(`/blogs/${blog._id}`)
+      .set('authorization', token)
+      .send({public: 'haha'})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC)
+        res.body.should.have.property('code', 1002)
+        done()
+      })
+    })
+    it('should get 400 and illegal tag waring', (done) => {
+      request()
+      .put(`/blogs/${blog._id}`)
+      .set('authorization', token)
+      .send({tag: 'my note 123123123123123123123'})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
+        res.body.should.have.property('code', 1002)
+        done()
+      })
+    })
+    it('should get 400 and illegal tag waring', (done) => {
+      request()
+      .put(`/blogs/${blog._id}`)
+      .set('authorization', token)
+      .send({tag: 123})
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
+        res.body.should.have.property('code', 1002)
         done()
       })
     })

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../../config')
 const validator = require('validator')
 const _ = require('lodash')
+const ERROR_MESSAGE = require('../helper/const')
 module.exports = {
   // 查找所有用户
   findUsers: async ctx => {
@@ -23,11 +24,11 @@ module.exports = {
     if (!name) {
       argError = 'missing name'
     } else if (!validator.isLength(name.trim(), {min: 0, max: 15})) {
-      argError = 'the length of name must between 1 and 15'
+      argError = ERROR_MESSAGE.USER.ILLEGAL_NAME
     } else if (!password) {
       argError = 'missing password'
-    } else if (password.trim().length < 6) {
-      argError = 'the password need to have at least 6 characters'
+    } else if (!_.isString(password) || password.trim().length < 6) {
+      argError = ERROR_MESSAGE.USER.ILLEGAL_PASSWORD
     }
     if (argError)
       return ctx.error({msg: argError, code: 1002})
@@ -75,11 +76,11 @@ module.exports = {
     // 参数校验
     let argError = ''
     if (password && (!_.isString(password) || password.trim().length < 6)) {
-     argError = 'the password must be a string and have at least 6 characters'
+     argError = ERROR_MESSAGE.USER.ILLEGAL_PASSWORD
    } else if (active && _.isNil([0, 1].find(num => num == active))) {
-     argError = 'active need to be one of 0 and 1'
+     argError =  ERROR_MESSAGE.USER.ILLEGAL_ACTIVE
    } else if (profile && profile.trim().length > 30) {
-     argError = 'the length of profile no more than 30'
+     argError = ERROR_MESSAGE.USER.ILLEGAL_PROFILE
    }
     if (argError)
       return ctx.error({msg: argError, code: 1002})

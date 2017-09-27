@@ -5,6 +5,7 @@ const uuid = require('uuid/v1')
 const app = require('../../app')
 const config = require('../../config')
 const userModel = require('../models/user.model')
+const ERROR_MESSAGE = require('../helper/const')
 const request = () => supertest(app.listen())
 // 创建模拟token
 const token = jwt.sign({
@@ -81,7 +82,7 @@ describe('testing user api', () => {
       .send({name: '12345678901234566', password: '123456'})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'the length of name must between 1 and 15')
+        res.body.should.have.property('msg', ERROR_MESSAGE.USER.ILLEGAL_NAME)
         res.body.should.have.property('code', 1002)
         done(err)
       })
@@ -92,7 +93,7 @@ describe('testing user api', () => {
       .send({name: new Date().getTime().toString(), password: '1233'})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'the password need to have at least 6 characters')
+        res.body.should.have.property('msg', ERROR_MESSAGE.USER.ILLEGAL_PASSWORD)
         res.body.should.have.property('code', 1002)
         done(err)
       })

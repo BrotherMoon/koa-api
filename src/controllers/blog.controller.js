@@ -3,6 +3,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const config = require('../../config')
 const blogModel = require('../models/blog.model')
+const ERROR_MESSAGE = require('../helper/const')
 module.exports = {
     // 新建一篇博客
     createBlog: async ctx => {
@@ -12,7 +13,7 @@ module.exports = {
         if (!title) {
           argError = 'title is required'
         } else if (!_.isString(title) || title.trim().length > 30){
-          argError = 'the length of title no more than 30 and it must be string'
+          argError = ERROR_MESSAGE.BLOG.ILLEGAL_TITLE
         } else if (!author) {
           argError = 'author is required'
         } else if (!_.isString(author) || !validator.isMongoId(author)) {
@@ -20,12 +21,12 @@ module.exports = {
         } else if (!content) {
           argError = 'content is required'
         } else if (!_.isString(content) || !content.trim().length > 0) {
-          argError = 'content must be a string and can`t not be empty'
+          argError = ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT
         } else if (public && _.isNil([0, 1].find(num => num == public))) {
-          argError = 'public need to be one of 0 and 1'
+          argError = ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC
         } else if (tag) {
           if (!_.isString(tag) || !validator.isLength(tag.trim(), {mix: 1, max: 15})) {
-            argError = 'tag must be a string and the length of tag must between 1 and 15'
+            argError = ERROR_MESSAGE.BLOG.ILLEGAL_TAG
           }
         }
         if (argError) return ctx.error({msg: argError, code: 1002})
@@ -57,11 +58,36 @@ module.exports = {
     },
     // 更新博客内容
     updateBlog: async ctx => {
-      const {blogId} = ctx.request.body
+      const {blogId} = ctx.params
       const {title, content, tag, public} = ctx.request.body
-      console.log()
-      console.log(blogId)
-      // const data = await blogModel.update({_id: blogId}, )
+      // 检测是否是合法的objectid
+      if (!validator.isMongoId(blogId)) {
+        return ctx.error({msg: 'invalid blogId', code: 1002, status: 400})
+      }
+      // 参数校验
+      let argError = ''
+      if (title) {
+        if (!_.isString(title) || title.trim().length > 30){
+          argError = ERROR_MESSAGE.BLOG.ILLEGAL_TITLE
+        }
+      } else if (content) {
+        if (!_.isString(content) || !content.trim().length > 0) {
+          argError = ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT
+        }
+      } else if (public && _.isNil([0, 1].find(num => num == public))) {
+        argError = ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC
+      } else if (tag) {
+        if (!_.isString(tag) || !validator.isLength(tag.trim(), {mix: 1, max: 15})) {
+          argError = ERROR_MESSAGE.BLOG.ILLEGAL_TAG
+        }
+      }
+      if (argError) return ctx.error({msg: argError, code: 1002})
+      let updateStr = {title, content, public, tag}
+      // 剔除没有传入的参数
+      updateStr = _.omitBy(updateStr, _.isNil)
+      // {new: true}表示更新成功后会返回更新后的信息，默认为false
+      const data = await blogModel.findByIdAndUpdate(blogId, updateStr, {new: true})
+      !_.isEmpty(data) ? ctx.success({status: 202, data}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
     },
     // 根据博客id删除博客
     deleteBolg: async ctx => {
