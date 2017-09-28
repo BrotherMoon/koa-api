@@ -92,7 +92,11 @@ module.exports = {
     // 根据博客id删除博客
     deleteBolg: async ctx => {
         const {blogId} = ctx.params
-        const data = await blogModel.remove({_id: id})
-        data.result.n > 0 ? ctx.success({data: 'successfully delete'}) : ctx.error({msg: 'delete failed', code: 1001})
+        // 检测是否是合法的objectid
+        if (!validator.isMongoId(blogId)) {
+          return ctx.error({msg: 'invalid blogId', code: 1002, status: 400})
+        }
+        const data = await blogModel.findOneAndRemove({_id: blogId})
+        !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: 'blog not found', code: 1006, status: 404})
     }
 }

@@ -280,4 +280,35 @@ describe('testing blog api', () => {
       })
     })
   })
+  // 测试删除博客接口
+  describe('DELETE /blogs:userId', () => {
+    it(`should get 204`, (done) => {
+      request()
+      .delete(`/blogs/${blog._id}`)
+      .set('authorization', token)
+      .expect(204, done)
+    })
+    it(`should get 400 and invalid blogId warning`, (done) => {
+      request()
+      .delete(`/blogs/${uuid()}`)
+      .set('authorization', token)
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'invalid blogId')
+        res.body.should.have.property('code', 1002)
+        done(err)
+      })
+    })
+    it(`should get 400 and user not found warning`, (done) => {
+      request()
+      .delete(`/blogs/111111111111111111111111`)
+      .set('authorization', token)
+      .expect(404)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'blog not found')
+        res.body.should.have.property('code', 1006)
+        done(err)
+      })
+    })
+  })
 })

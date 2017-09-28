@@ -207,10 +207,10 @@ describe('testing user api', () => {
       request()
       .delete(`/users/111111111111111111111111`)
       .set('authorization', token)
-      .expect(400)
+      .expect(404)
       .end((err, res) => {
         res.body.should.have.property('msg', 'user not found')
-        res.body.should.have.property('code', 1003)
+        res.body.should.have.property('code', 1006)
         done(err)
       })
     })

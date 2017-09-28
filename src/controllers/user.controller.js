@@ -99,10 +99,6 @@ module.exports = {
       return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
     }
     const data = await userModel.findOneAndRemove({_id: userId})
-    if (!_.isEmpty(data)) {
-      ctx.success({status: 204})
-    } else {
-      ctx.error({msg: 'user not found', code: 1003, status: 400})
-    }
+    !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: 'user not found', code: 1006, status: 404})
   }
 }
