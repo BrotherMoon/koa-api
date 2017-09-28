@@ -203,7 +203,7 @@ describe('testing user api', () => {
         done(err)
       })
     })
-    it(`should get 400 and user not found warning`, (done) => {
+    it(`should get 404 and user not found warning`, (done) => {
       request()
       .delete(`/users/111111111111111111111111`)
       .set('authorization', token)
@@ -212,6 +212,19 @@ describe('testing user api', () => {
         res.body.should.have.property('msg', 'user not found')
         res.body.should.have.property('code', 1006)
         done(err)
+      })
+    })
+  })
+  // 测试获取该用户的博客标签及其对应的博客数量接口
+  describe('GET /users:userId/tags', () => {
+    it(`should get 200 and and array`, (done) => {
+      request()
+      .get(`/users/${userForTest2._id}/tags`)
+      .set('authorization', token)
+      .expect(200)
+      .end((err, res) => {
+        res.body.should.have.property('length')
+        done()
       })
     })
   })

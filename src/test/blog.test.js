@@ -299,7 +299,7 @@ describe('testing blog api', () => {
         done(err)
       })
     })
-    it(`should get 400 and user not found warning`, (done) => {
+    it(`should get 404 and blog not found warning`, (done) => {
       request()
       .delete(`/blogs/111111111111111111111111`)
       .set('authorization', token)

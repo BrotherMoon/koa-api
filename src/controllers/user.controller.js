@@ -1,4 +1,5 @@
 const userModel = require('../models/user.model')
+const blogModel = require('../models/blog.model')
 const jwt = require('jsonwebtoken')
 const config = require('../../config')
 const validator = require('validator')
@@ -100,5 +101,20 @@ module.exports = {
     }
     const data = await userModel.findOneAndRemove({_id: userId})
     !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: 'user not found', code: 1006, status: 404})
+  },
+  // 找出该用户的所有博客标签以及对应标签下的博客数量
+  findTagsAndBogNum: async ctx => {
+    const {userId} = ctx.params
+    // 检测是否是合法的objectid
+    if (!validator.isMongoId(userId)) {
+      return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
+    }
+    const data = await blogModel.aggregate([
+      {$match: {author: userId}},
+      {$group: {_id: '$tag', num: {$sum: 1}}}
+    ])
+    // 在结果中查询是否有‘无标签’这一默认标签，若无，填充该集合
+    !_.find(data, tag => tag._id === '无标签') && data.push({_id: '无标签', num: 0})
+    ctx.success({data})
   }
 }
