@@ -13,11 +13,13 @@ const token = jwt.sign({
 }, config.tokenSecret, {expiresIn: 100})
 let userForTest1 = {
   name: 'testUser1',
-  password: '123456'
+  password: '123456',
+  email:'98880088@qq.com'
 }
 let userForTest2 = {
   name: 'testUser2',
-  password: '123456'
+  password: '123456',
+  email:'98880088@qq.com'
 }
 describe('testing user api', () => {
   // 先创建一个测试用户
@@ -98,6 +100,35 @@ describe('testing user api', () => {
         done(err)
       })
     })
+    it('should get 400 and missing email wraning', (done) => {
+      request()
+      .post('/users')
+      .send({
+        name: new Date().getTime().toString(),
+        password: '123456'
+      })
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', 'missing email')
+        res.body.should.have.property('code', 1002)
+        done(err)
+      })
+    })
+    it('should get 400 and the illegal email warning', (done) => {
+      request()
+      .post('/users')
+      .send({
+        name: new Date().getTime().toString(),
+        password: '123456',
+        email: '123.cn'
+      })
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', ERROR_MESSAGE.USER.ILLEGAL_EMAIL)
+        res.body.should.have.property('code', 1002)
+        done(err)
+      })
+    })
   })
   // 测试获取所有用户数据接口
   describe('GET /users', () => {
@@ -154,6 +185,7 @@ describe('testing user api', () => {
         done(err)
       })
     })
+
     it('should get 400 and user not found warning', (done) => {
       request()
       .post('/users/login')
@@ -212,19 +244,6 @@ describe('testing user api', () => {
         res.body.should.have.property('msg', 'user not found')
         res.body.should.have.property('code', 1006)
         done(err)
-      })
-    })
-  })
-  // 测试获取该用户的博客标签及其对应的博客数量接口
-  describe('GET /users:userId/tags', () => {
-    it(`should get 200 and and array`, (done) => {
-      request()
-      .get(`/users/${userForTest2._id}/tags`)
-      .set('authorization', token)
-      .expect(200)
-      .end((err, res) => {
-        res.body.should.have.property('length')
-        done()
       })
     })
   })

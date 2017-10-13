@@ -19,17 +19,21 @@ module.exports = {
   },
   // 创建用户
   createUser: async(ctx, next) => {
-    const {name, password} = ctx.request.body
+    const {name, password, email} = ctx.request.body
     // 校验用户名还有密码
     let argError = ''
     if (!name) {
       argError = 'missing name'
-    } else if (!validator.isLength(name.trim(), {min: 0, max: 15})) {
+    } else if (!validator.isLength(name.trim(), {min: 3, max: 15})) {
       argError = ERROR_MESSAGE.USER.ILLEGAL_NAME
     } else if (!password) {
       argError = 'missing password'
     } else if (!_.isString(password) || password.trim().length < 6) {
       argError = ERROR_MESSAGE.USER.ILLEGAL_PASSWORD
+    } else if (!email) {
+      argError = 'missing email'
+    } else if (!validator.isEmail(email)) {
+      argError = ERROR_MESSAGE.USER.ILLEGAL_EMAIL
     }
     if (argError)
       return ctx.error({msg: argError, code: 1002})
