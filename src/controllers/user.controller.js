@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../../config')
 const validator = require('validator')
 const _ = require('lodash')
-const ERROR_MESSAGE = require('../helper/const')
+const ERROR_MESSAGE = require('../utils/const')
 module.exports = {
   // 查找所有用户
   findUsers: async ctx => {
@@ -43,7 +43,7 @@ module.exports = {
       return ctx.error({msg: 'user name already exists', code: 1005})
     // 创建用户
     const newUser = new userModel({name, password})
-    const data = await newUser.save()
+    let data = await newUser.save()
     return data ? ctx.success({data, status: 201}) : ctx.error({msg: 'create failed', code: 1008})
   },
   // 用户登录
@@ -63,12 +63,8 @@ module.exports = {
     }, config.tokenSecret, {
       expiresIn: 60 * 60 * 24
     })
-    ctx.success({
-      data: {
-        user: data,
-        token
-      }
-    })
+    Object.assign(data, {token})
+    ctx.success({data})
   },
   // 更新用户信息
   updateUser: async ctx => {

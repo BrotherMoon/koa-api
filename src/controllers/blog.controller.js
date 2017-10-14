@@ -3,7 +3,7 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const config = require('../../config')
 const blogModel = require('../models/blog.model')
-const ERROR_MESSAGE = require('../helper/const')
+const ERROR_MESSAGE = require('../utils/const')
 module.exports = {
     // 新建一篇博客
     createBlog: async ctx => {

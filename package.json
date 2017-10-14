@@ -25,6 +25,8 @@
     "lodash": "^4.17.4",
     "mocha": "^3.5.0",
     "mongoose": "^4.10.6",
+    "nodemailer": "^4.2.0",
+    "nodemon": "^1.12.1",
     "qiniu": "^7.0.8",
     "should": "^11.2.1",
     "supertest": "^3.0.0",

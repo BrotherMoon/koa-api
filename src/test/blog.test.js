@@ -6,7 +6,7 @@ const app = require('../../app')
 const config = require('../../config')
 const userModel = require('../models/user.model')
 const blogModel = require('../models/blog.model')
-const ERROR_MESSAGE = require('../helper/const')
+const ERROR_MESSAGE = require('../utils/const')
 const request = () => supertest(app.listen())
 let userForTest = {
   name: 'testUser',

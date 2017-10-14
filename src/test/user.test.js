@@ -5,7 +5,7 @@ const uuid = require('uuid/v1')
 const app = require('../../app')
 const config = require('../../config')
 const userModel = require('../models/user.model')
-const ERROR_MESSAGE = require('../helper/const')
+const ERROR_MESSAGE = require('../utils/const')
 const request = () => supertest(app.listen())
 // 创建模拟token
 const token = jwt.sign({
@@ -40,7 +40,7 @@ describe('testing user api', () => {
       .expect(201)
       .end((err, res) => {
         res.body.should.have.property('name', userForTest2.name)
-        res.body.should.have.property('password', userForTest2.password)
+        console.log(res.body)
         Object.assign(userForTest2, {_id: res.body._id})
         done(err)
       })
@@ -167,12 +167,7 @@ describe('testing user api', () => {
       request()
       .post('/users/login')
       .send(userForTest1)
-      .expect(200)
-      .end((err, res) => {
-        res.body.should.have.property('user')
-        res.body.should.have.property('token')
-        done(err)
-      })
+      .expect(200, done)
     })
     it('should get 400 and wrong password warning', (done) => {
       request()
