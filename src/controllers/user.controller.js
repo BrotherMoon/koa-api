@@ -61,7 +61,7 @@ module.exports = {
   login: async ctx => {
     const {email, password} = ctx.request.body
     // 根据name查找用户
-    const data = await userModel.findOne({email})
+    let data = await userModel.findOne({email})
     if (!data)
       return ctx.error({msg: 'user not found', code: 1003, status: 400})
     if (data.password !== password)
@@ -70,12 +70,12 @@ module.exports = {
     data.password = undefined
     // 创建并返回后续用于请求验证的token以及用户信息
     const token = jwt.sign({
-      _id: data.id
+      _id: data._id
     }, config.tokenSecret, {
       expiresIn: 60 * 60 * 24
     })
-    Object.assign(data, {token})
-    ctx.success({data})
+    data.token = token
+    ctx.success({data: Object.assign(data._doc, {token})})
   },
   // 更新用户信息
   updateUser: async ctx => {

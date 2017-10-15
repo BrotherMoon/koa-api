@@ -156,7 +156,11 @@ describe('testing user api', () => {
       request()
       .post('/users/login')
       .send(userForTest1)
-      .expect(200, done)
+      .expect(200)
+      .end((err, res) => {
+        res.body.should.have.property('token')
+        done(err)
+      })
     })
     it('should get 400 and wrong password warning', (done) => {
       request()

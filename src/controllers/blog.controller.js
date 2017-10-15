@@ -25,7 +25,7 @@ module.exports = {
         } else if (public && _.isNil([0, 1].find(num => num == public))) {
           argError = ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC
         } else if (tag) {
-          if (!_.isString(tag) || !validator.isLength(tag.trim(), {mix: 1, max: 15})) {
+          if (!_.isString(tag) || !validator.isLength(tag.trim(), {min: 1, max: 10})) {
             argError = ERROR_MESSAGE.BLOG.ILLEGAL_TAG
           }
         }
