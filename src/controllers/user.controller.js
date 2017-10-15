@@ -1,10 +1,11 @@
-const userModel = require('../models/user.model')
-const blogModel = require('../models/blog.model')
-const jwt = require('jsonwebtoken')
-const config = require('../../config')
 const validator = require('validator')
 const _ = require('lodash')
+const jwt = require('jsonwebtoken')
+const userModel = require('../models/user.model')
+const blogModel = require('../models/blog.model')
+const config = require('../../config')
 const ERROR_MESSAGE = require('../utils/const')
+const helper = require('../utils/helper')
 module.exports = {
   // 查找所有用户
   findUsers: async ctx => {
@@ -26,10 +27,6 @@ module.exports = {
       argError = 'missing name'
     } else if (!validator.isLength(name.trim(), {min: 3, max: 15})) {
       argError = ERROR_MESSAGE.USER.ILLEGAL_NAME
-    } else if (!password) {
-      argError = 'missing password'
-    } else if (!_.isString(password) || password.trim().length < 6) {
-      argError = ERROR_MESSAGE.USER.ILLEGAL_PASSWORD
     } else if (!email) {
       argError = 'missing email'
     } else if (!validator.isEmail(email)) {
@@ -38,19 +35,33 @@ module.exports = {
     if (argError)
       return ctx.error({msg: argError, code: 1002})
     // 根据name查找是否已经存在该用户名
-    const user = await userModel.findOne({name})
-    if (!_.isEmpty(user))
-      return ctx.error({msg: 'user name already exists', code: 1005})
+    const namedUser = await userModel.findOne({name})
+    if (!_.isEmpty(namedUser))
+      return ctx.error({msg: ERROR_MESSAGE.USER.USER_EXISTS, code: 1005})
+    // 根据email查看该邮箱是否已经被注册使用
+    const mailedUser = await userModel.findOne({email})
+    if (!_.isEmpty(mailedUser))
+      return ctx.error({msg: ERROR_MESSAGE.USER.EMAIL_USED, code: 1009})
+    // 生成由6位随机数字组成的字符串作为初始密码
+    const initPwd = _.sampleSize([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 6).join('')
     // 创建用户
-    const newUser = new userModel({name, password})
+    const newUser = new userModel({name, password: initPwd, email})
+    // 将用户信息插入数据库
     let data = await newUser.save()
-    return data ? ctx.success({data, status: 201}) : ctx.error({msg: 'create failed', code: 1008})
+    if (data) {
+      data.password = undefined
+      // 发送邮件告知用户初始密码,这里不等待邮件的发送成功,当用户没有收到邮件,前端再次提供用户发送邮件的选择即可
+      helper.sendMail({to: email, p1: `您的初始密码为 <b>${initPwd}</b>`, p2: '为了保证您的账号安全,请在登录后及时修改密码并且删除该邮件'})
+      return ctx.success({data, status: 201})
+    } else {
+      return ctx.error({msg: 'create failed', code: 1008})
+    }
   },
   // 用户登录
   login: async ctx => {
-    const {name, password} = ctx.request.body
+    const {email, password} = ctx.request.body
     // 根据name查找用户
-    const data = await userModel.findOne({name})
+    const data = await userModel.findOne({email})
     if (!data)
       return ctx.error({msg: 'user not found', code: 1003, status: 400})
     if (data.password !== password)

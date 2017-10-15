@@ -28,7 +28,8 @@
 | 1002  | missing/invalid args | 参数缺失/无效 | 400 |
 | 1003  | user not found | 用户不存在 | 400 |
 | 1004  | wrong password | 密码错误 | 400 |
-| 1005  | user name already exists | 用户名被占用 | 400 |
+| 1005  | username already exists | 用户名已存在 | 400 |
 | 1006  | uri/something not found | 资源不存在 | 404 |
 | 1007  | update failed | 更新资源失败 | 400 |
 | 1008  | create failed | 创建资源失败 | 400 |
+| 1009  | email has been used | 邮箱已被注册使用 | 400 |

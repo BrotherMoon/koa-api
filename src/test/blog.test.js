@@ -10,7 +10,8 @@ const ERROR_MESSAGE = require('../utils/const')
 const request = () => supertest(app.listen())
 let userForTest = {
   name: 'testUser',
-  password: '123456'
+  password: '123456',
+  email: '111@qq.com'
 }
 let blog = {}
 let token = ''

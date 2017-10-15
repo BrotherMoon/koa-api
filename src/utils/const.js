@@ -4,7 +4,9 @@ module.exports = {
     ILLEGAL_PASSWORD: 'the password must be a string and have at least 6 characters',
     ILLEGAL_ACTIVE: 'active need to be one of 0 and 1',
     ILLEGAL_PROFILE: 'the length of profile no more than 30',
-    ILLEGAL_EMAIL: 'illegal email'
+    ILLEGAL_EMAIL: 'illegal email',
+    USER_EXISTS: 'username already exists',
+    EMAIL_USED: 'email has been used'
   },
   BLOG: {
     ILLEGAL_TITLE: 'the length of title no more than 30 and it must be string',

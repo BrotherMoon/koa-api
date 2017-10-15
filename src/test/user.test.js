@@ -14,12 +14,11 @@ const token = jwt.sign({
 let userForTest1 = {
   name: 'testUser1',
   password: '123456',
-  email:'98880088@qq.com'
+  email:'119@qq.com'
 }
 let userForTest2 = {
   name: 'testUser2',
-  password: '123456',
-  email:'98880088@qq.com'
+  email:'810077182@qq.com'
 }
 describe('testing user api', () => {
   // 先创建一个测试用户
@@ -40,26 +39,42 @@ describe('testing user api', () => {
       .expect(201)
       .end((err, res) => {
         res.body.should.have.property('name', userForTest2.name)
-        console.log(res.body)
         Object.assign(userForTest2, {_id: res.body._id})
         done(err)
       })
     })
-    it('should get 400 and user name already exists waring', (done) => {
+    it('should get 400 and account name already exists waring', (done) => {
       request()
       .post('/users')
-      .send(userForTest1)
+      .send({
+        name: userForTest1.name,
+        email: '213@qq.com'
+      })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'user name already exists')
+        res.body.should.have.property('msg', ERROR_MESSAGE.USER.USER_EXISTS)
         res.body.should.have.property('code', 1005)
+        done(err)
+      })
+    })
+    it('should get 400 and email has been used waring', (done) => {
+      request()
+      .post('/users')
+      .send({
+        name: new Date().getTime().toString(),
+        email: userForTest1.email
+      })
+      .expect(400)
+      .end((err, res) => {
+        res.body.should.have.property('msg', ERROR_MESSAGE.USER.EMAIL_USED)
+        res.body.should.have.property('code', 1009)
         done(err)
       })
     })
     it('should get 400 and missing name wraning', (done) => {
       request()
       .post('/users')
-      .send({password: '123456'})
+      .send({emaill: '123456@qq.com'})
       .expect(400)
       .end((err, res) => {
         res.body.should.have.property('msg', 'missing name')
@@ -67,21 +82,10 @@ describe('testing user api', () => {
         done(err)
       })
     })
-    it('should get 400 and missing password wraning', (done) => {
-      request()
-      .post('/users')
-      .send({name: new Date().getTime().toString()})
-      .expect(400)
-      .end((err, res) => {
-        res.body.should.have.property('msg', 'missing password')
-        res.body.should.have.property('code', 1002)
-        done(err)
-      })
-    })
     it('should get 400 and the illegal name warning', (done) => {
       request()
       .post('/users')
-      .send({name: '12345678901234566', password: '123456'})
+      .send({name: '12345678901234566', emaill: '123456@qq.com'})
       .expect(400)
       .end((err, res) => {
         res.body.should.have.property('msg', ERROR_MESSAGE.USER.ILLEGAL_NAME)
@@ -89,24 +93,10 @@ describe('testing user api', () => {
         done(err)
       })
     })
-    it('should get 400 and the illegal password warning', (done) => {
-      request()
-      .post('/users')
-      .send({name: new Date().getTime().toString(), password: '1233'})
-      .expect(400)
-      .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.USER.ILLEGAL_PASSWORD)
-        res.body.should.have.property('code', 1002)
-        done(err)
-      })
-    })
     it('should get 400 and missing email wraning', (done) => {
       request()
       .post('/users')
-      .send({
-        name: new Date().getTime().toString(),
-        password: '123456'
-      })
+      .send({name: new Date().getTime().toString()})
       .expect(400)
       .end((err, res) => {
         res.body.should.have.property('msg', 'missing email')
@@ -119,7 +109,6 @@ describe('testing user api', () => {
       .post('/users')
       .send({
         name: new Date().getTime().toString(),
-        password: '123456',
         email: '123.cn'
       })
       .expect(400)
@@ -172,7 +161,7 @@ describe('testing user api', () => {
     it('should get 400 and wrong password warning', (done) => {
       request()
       .post('/users/login')
-      .send({name: userForTest1.name, password: '1234567'})
+      .send({email: userForTest1.email, password: '1234567'})
       .expect(400)
       .end((err, res) => {
         res.body.should.have.property('msg', 'wrong password')
@@ -180,12 +169,11 @@ describe('testing user api', () => {
         done(err)
       })
     })
-
     it('should get 400 and user not found warning', (done) => {
       request()
       .post('/users/login')
       .send({
-        name: uuid(),
+        email: `${uuid()}@qq.com`,
         password: '123456'
       })
       .expect(400)

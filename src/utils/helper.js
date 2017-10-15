@@ -32,6 +32,6 @@ const sendMail = ({to, p1, p2}) => {
   })
 }
 module.exports = {sendMail}
-sendMail({to: '842390367@qq.com', p1: 'hahah <b>123123<b>', 'p2': 'shabuiasd'})
-  .then(id => console.log('Message sent: %s', id))
-  .catch(err => console.error(err))
+// sendMail({to: '842390367@qq.com', p1: 'hahah <b>123123<b>', 'p2': 'shabuiasd'})
+//   .then(id => console.log('Message sent: %s', id))
+//   .catch(err => console.error(err))
