@@ -23,8 +23,11 @@ let userForTest2 = {
 describe('testing user api', () => {
   // 先创建一个测试用户
   before((done) => {
-    const testUser = new userModel(userForTest1)
-    testUser.save((err, result) => done())
+    // 先尝试删除含有测试用户名的用户账号，防止因测试中断数据残留造成测试失败
+    userModel.remove({name: {$in: [userForTest1.name, userForTest2.name]}}, (err, result) => {
+      const testUser = new userModel(userForTest1)
+      testUser.save((err, result) => done())
+    })
   })
   // 最后删除这个测试用户
   after((done) => {

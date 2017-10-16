@@ -48,8 +48,8 @@ module.exports = {
     const newUser = new userModel({name, password: initPwd, email})
     // 将用户信息插入数据库
     let data = await newUser.save()
+    data = _.omit(data.toJSON(), 'password')
     if (data) {
-      data.password = undefined
       // 发送邮件告知用户初始密码,这里不等待邮件的发送成功,当用户没有收到邮件,前端再次提供用户发送邮件的选择即可
       helper.sendMail({to: email, p1: `您的初始密码为 <b>${initPwd}</b>`, p2: '为了保证您的账号安全,请在登录后及时修改密码并且删除该邮件'})
       return ctx.success({data, status: 201})
@@ -60,22 +60,22 @@ module.exports = {
   // 用户登录
   login: async ctx => {
     const {email, password} = ctx.request.body
-    // 根据name查找用户
-    let data = await userModel.findOne({email})
+    // 根据name查找用户, 设置lean: true可以把mongoose包装返回的不可修改对象转换为一个可修改的object
+    let data = await userModel.findOne({email}, null, {lean: true})
     if (!data)
       return ctx.error({msg: 'user not found', code: 1003, status: 400})
     if (data.password !== password)
       return ctx.error({msg: 'wrong password', code: 1004})
     // 删除password属性，防止密码泄露
-    data.password = undefined
+    data = _.omit(data, 'password')
     // 创建并返回后续用于请求验证的token以及用户信息
     const token = jwt.sign({
       _id: data._id
     }, config.tokenSecret, {
       expiresIn: 60 * 60 * 24
     })
-    data.token = token
-    ctx.success({data: Object.assign(data._doc, {token})})
+    Object.assign(data, {token})
+    ctx.success({data})
   },
   // 更新用户信息
   updateUser: async ctx => {
