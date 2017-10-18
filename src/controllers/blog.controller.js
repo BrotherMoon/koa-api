@@ -53,7 +53,7 @@ module.exports = {
         const {_id} = token ? jwt.verify(token, config.tokenSecret) : false
         // 如果token中的_id与author不等则表明不是本人查看,则只能查询设置为公开的博客
         _id !== author && Object.assign(whereStr, {public: 1})
-        const data = await blogModel.find(whereStr).populate({path: 'author', select: {id: 1, name: 1}})
+        const data = await blogModel.find(whereStr).populate({path: 'author', select: {password: 0}})
         ctx.success({data})
     },
     // 更新博客内容
