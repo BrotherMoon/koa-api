@@ -31,7 +31,7 @@ describe('testing blog api', () => {
       // 创建模拟token
       token = jwt.sign({
         _id: result._id
-      }, config.tokenSecret, {expiresIn: 10000})
+      }, config.tokenSecret, {expiresIn: 60})
       console.log('toekn ->', token)
       done()
     })

@@ -46,13 +46,15 @@ module.exports = {
           ]
         }
         // 如果author不为空,则在对应的author下查找
-        author && Object.assign(whereStr, {author})
-        // 如果需要查询设置为仅自己可见的博客则需要在请求头部传入又服务端颁发的token,然后解析token得出获得权限的_id是否与将要查询的_id是否一致,一致则可查看所有博客
-        const token = ctx.request.header['authorization']
-        // 解析出token中的用户_id
-        const {_id} = token ? jwt.verify(token, config.tokenSecret) : false
-        // 如果token中的_id与author不等则表明不是本人查看,则只能查询设置为公开的博客
-        _id !== author && Object.assign(whereStr, {public: 1})
+        if (author) {
+          Object.assign(whereStr, {author})
+          // 如果需要查询设置为仅自己可见的博客则需要在请求头部传入又服务端颁发的token,然后解析token得出获得权限的_id是否与将要查询的_id是否一致,一致则可查看所有博客
+          const token = ctx.request.header['authorization']
+          // 解析出token中的用户_id
+          const {_id} = token ? jwt.verify(token, config.tokenSecret) : false
+          // 如果token中的_id与author不等则表明不是本人查看,则只能查询设置为公开的博客
+          _id !== author && Object.assign(whereStr, {public: 1})
+        }
         const data = await blogModel.find(whereStr).populate({path: 'author', select: {password: 0}})
         ctx.success({data})
     },

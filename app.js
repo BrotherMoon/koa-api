@@ -26,7 +26,7 @@ app.use(require('./src/middlewares/catch'))
 app.use(koaStatic('doc'))
 // 路由
 app.use(router.routes())
-    .use(router.allowedMethods())
+  .use(router.allowedMethods())
 if (module.parent) {
   module.exports = app
 } else {
