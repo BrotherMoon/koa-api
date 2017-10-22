@@ -130,27 +130,21 @@ describe('testing user api', () => {
       .expect(200, done)
     })
   })
-  // 测试根据用户名获取用户信息接口
-  describe('GET /users:name', () => {
-    it(`should get 200 and an array is not empty`, (done) => {
+  // 测试根据用户id获取用户信息接口
+  describe('GET /users:id', () => {
+    it(`should get 200 and userinfo`, (done) => {
       request()
-      .get(`/users/${userForTest1.name}`)
+      .get(`/users/${userForTest2._id}`)
       .expect(200)
       .end((err, res) => {
-        res.body.forEach(item => {
-          item.should.have.property('name', userForTest1.name)
-        })
+        res.body.should.have.property('name', userForTest2.name)
         done(err)
       })
     })
-    it(`should get 400 and an empty array`, (done) => {
+    it(`should get 204 no content`, (done) => {
       request()
-      .get(`/users/${uuid()}`)
-      .expect(200)
-      .end((err, res) => {
-        res.body.should.be.empty()
-        done(err)
-      })
+      .get(`/users/111111111111111111111111`)
+      .expect(204, done)
     })
   })
   // 测试用户登录接口
@@ -191,7 +185,7 @@ describe('testing user api', () => {
       })
     })
   })
-  // 测试更新用户信息借口接口
+  // 测试更新用户信息接口
   describe('PUT /users', () => {
     it('should get 400 and the invalid password warning', (done) => {
       request()

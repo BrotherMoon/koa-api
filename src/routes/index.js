@@ -4,7 +4,7 @@ const blogCtrl = require('../controllers/blog.controller')
 const checkToken = require('../middlewares/checkToken')
 /*用户相关路由*/
 router.get('/users', userCtrl.findUsers)
-      .get('/users/:name', userCtrl.findUser)
+      .get('/users/:id', userCtrl.findUser)
       .post('/users', userCtrl.createUser)
       .post('/users/login', userCtrl.login)
       .put('/users/:userId', userCtrl.updateUser)

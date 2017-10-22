@@ -10,9 +10,9 @@ module.exports = async(ctx, next) => {
       const decoded = jwt.verify(token, config.tokenSecret)
       return next()
     } catch (err) {
-      ctx.error({msg: err.message, code: 1001, status: 401})
+      return ctx.error({msg: err.message, code: 1001, status: 401})
     }
   } else {
-    ctx.error({msg: 'unauthorized', code: 1000, status: 401})
+    return ctx.error({msg: 'unauthorized', code: 1000, status: 401})
   }
 }

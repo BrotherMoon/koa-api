@@ -12,10 +12,10 @@ module.exports = {
     const data = await userModel.find({}, {password: 0})
     ctx.success({data})
   },
-  // 根据用户名查找用户
+  // 根据用户id查找用户
   findUser: async ctx => {
-    const {name} = ctx.params
-    const data = await userModel.find({name}, {password: 0})
+    const {id} = ctx.params
+    const data = await userModel.findOne({_id: id}, {password: 0})
     ctx.success({data})
   },
   // 创建用户
@@ -72,7 +72,7 @@ module.exports = {
     const token = jwt.sign({
       _id: data._id
     }, config.tokenSecret, {
-      expiresIn: 60 * 60 * 24
+      expiresIn: 60 * 60 * 24 * 360
     })
     Object.assign(data, {token})
     ctx.success({data})

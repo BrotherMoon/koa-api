@@ -55,7 +55,7 @@ module.exports = {
           // 如果token中的_id与author不等则表明不是本人查看,则只能查询设置为公开的博客
           _id !== author && Object.assign(whereStr, {public: 1})
         }
-        const data = await blogModel.find(whereStr).populate({path: 'author', select: {password: 0}})
+        const data = await blogModel.find(whereStr).populate({path: 'author', select: {password: 0}}).sort({createdAt: -1})
         ctx.success({data})
     },
     // 更新博客内容
