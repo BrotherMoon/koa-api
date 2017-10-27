@@ -7,7 +7,7 @@ router.get('/users', userCtrl.findUsers)
       .get('/users/:id', userCtrl.findUser)
       .post('/users', userCtrl.createUser)
       .post('/users/login', userCtrl.login)
-      .put('/users/:userId', userCtrl.updateUser)
+      .put('/users/:userId', checkToken, userCtrl.updateUser)
       .del('/users/:userId', checkToken, userCtrl.deleteUser)
       .get('/users/:userId/tags', checkToken, userCtrl.findTagsAndBogNum)
 /*博客文章相关路由*/

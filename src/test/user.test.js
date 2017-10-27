@@ -7,10 +7,7 @@ const config = require('../../config')
 const userModel = require('../models/user.model')
 const ERROR_MESSAGE = require('../utils/const')
 const request = () => supertest(app.listen())
-// 创建模拟token
-const token = jwt.sign({
-  id: '89124819023j12jsadas'
-}, config.tokenSecret, {expiresIn: 100})
+let token = '' 
 let userForTest1 = {
   name: 'testUser1',
   password: '123456',
@@ -29,7 +26,7 @@ describe('testing user api', () => {
       testUser.save((err, result) => done())
     })
   })
-  // 最后删除这个测试用户
+  // 最后删除测试用户1
   after((done) => {
     userModel.remove({name: userForTest1.name}, (err, result) => done())
   })
@@ -43,6 +40,9 @@ describe('testing user api', () => {
       .end((err, res) => {
         res.body.should.have.property('name', userForTest2.name)
         Object.assign(userForTest2, {_id: res.body._id})
+        token = jwt.sign({
+          _id: res.body._id
+        }, config.tokenSecret, {expiresIn: 100})
         done(err)
       })
     })
@@ -190,12 +190,14 @@ describe('testing user api', () => {
     it('should get 400 and the invalid password warning', (done) => {
       request()
       .put(`/users/${userForTest2._id}`)
+      .set('authorization', token)
       .send({password: 111111})
       .expect(400, done)
     })
     it('should get 202 and the updated user info', (done) => {
       request()
       .put(`/users/${userForTest2._id}`)
+      .set('authorization', token)
       .send({password: '111111'})
       .expect(202, done)
     })

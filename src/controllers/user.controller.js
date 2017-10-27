@@ -72,14 +72,15 @@ module.exports = {
     const token = jwt.sign({
       _id: data._id
     }, config.tokenSecret, {
-      expiresIn: 60 * 60 * 24 * 360
+      expiresIn: config.expiresIn
     })
     Object.assign(data, {token})
     ctx.success({data})
   },
   // 更新用户信息
   updateUser: async ctx => {
-    const {userId} = ctx.params
+    console.log(ctx._id)
+    const userId = ctx._id
     const {password, active, profile, avatar} = ctx.request.body
     // 检测是否是合法的objectid
     if (!validator.isMongoId(userId)) {

@@ -31,8 +31,8 @@ describe('testing blog api', () => {
       // 创建模拟token
       token = jwt.sign({
         _id: result._id
-      }, config.tokenSecret, {expiresIn: 60})
-      console.log('toekn ->', token)
+      }, config.tokenSecret, {expiresIn: 60 * 5})
+      console.log('Toekn by testUser for test ->', token)
       done()
     })
     .catch(err => console.error(err))
@@ -45,7 +45,6 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .send({
         title: 'test blog',
-        author: userForTest._id,
         content: 'hahah'
       })
       .expect(201)
@@ -58,10 +57,7 @@ describe('testing blog api', () => {
       request()
       .post('/blogs')
       .set('authorization', token)
-      .send({
-        author: userForTest._id,
-        content: 'hahah'
-      })
+      .send({content: 'hahah'})
       .expect(400)
       .end((err, res) => {
         res.body.should.have.property('msg', 'title is required')
@@ -75,7 +71,6 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .send({
         title: 'uaS8DUJ09ASJDPAJSPODJKPOASKJDASJK;DJKASAsdNLKNMLKMLK',
-        author: userForTest._id,
         content: 'hahah'
       })
       .expect(400)
@@ -85,45 +80,11 @@ describe('testing blog api', () => {
         done()
       })
     })
-    it('should get 400 and missing author waring', (done) => {
-      request()
-      .post('/blogs')
-      .set('authorization', token)
-      .send({
-        title: 'test blog',
-        content: 'hahah'
-      })
-      .expect(400)
-      .end((err, res) => {
-        res.body.should.have.property('msg', 'author is required')
-        res.body.should.have.property('code', 1002)
-        done()
-      })
-    })
-    it('should get 400 and illegal author waring', (done) => {
-      request()
-      .post('/blogs')
-      .set('authorization', token)
-      .send({
-        title: 'test blog',
-        author: 1231423543534,
-        content: 'hahah'
-      })
-      .expect(400)
-      .end((err, res) => {
-        res.body.should.have.property('msg', 'author must be a valid mongoId')
-        res.body.should.have.property('code', 1002)
-        done()
-      })
-    })
     it('should get 400 and missing content waring', (done) => {
       request()
       .post('/blogs')
       .set('authorization', token)
-      .send({
-        title: 'test blog',
-        author: userForTest._id
-      })
+      .send({title: 'test blog'})
       .expect(400)
       .end((err, res) => {
         res.body.should.have.property('msg', 'content is required')
@@ -137,7 +98,6 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .send({
         title: 'test blog',
-        author: userForTest._id,
         content: ' '
       })
       .expect(400)
@@ -153,7 +113,6 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .send({
         title: 'test blog',
-        author: userForTest._id,
         content: 'xixix',
         public: 'haha'
       })
@@ -170,7 +129,6 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .send({
         title: 'test blog',
-        author: userForTest._id,
         content: 'xixix',
         tag: 'my note 123123123123123123123'
       })
@@ -187,7 +145,6 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .send({
         title: 'test blog',
-        author: userForTest._id,
         content: 'xixix',
         tag: 123
       })
