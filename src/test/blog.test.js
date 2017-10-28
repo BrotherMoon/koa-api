@@ -156,14 +156,37 @@ describe('testing blog api', () => {
       })
     })
   })
-  // 测试查找博客接口
+  // 测试根据博客id获取博客信息接口
+  describe('GET /blogs:id', () => {
+    it(`should get 200 and bloginfo`, (done) => {
+      request()
+      .get(`/blogs/${blog._id}`)
+      .expect(200)
+      .end((err, res) => {
+        res.body.should.have.property('title', blog.title)
+        done(err)
+      })
+    })
+    it(`should get 204 no content`, (done) => {
+      request()
+      .get(`/blogs/111111111111111111111111`)
+      .expect(204, done)
+    })
+    it(`should get 400 and invalid blogId warning`, (done) => {
+      request()
+      .get(`/blogs/11111`)
+      .expect(400, done)
+    })
+  })
+  // 测试根据关键字或者作者id查找博客接口
   describe('GET /blogs', () =>{
     it('should get 200 and an array', (done) => {
       request()
       .get('/blogs')
       .expect(200)
       .end((err, res) => {
-        res.body.should.have.property('length')
+        res.body.should.have.property('blogs')
+        res.body.should.have.property('total')
         done()
       })
     })

@@ -13,6 +13,7 @@ router.get('/users', userCtrl.findUsers)
 /*博客文章相关路由*/
 router.post('/blogs', checkToken, blogCtrl.createBlog)
       .get('/blogs', blogCtrl.findBlogs)
+      .get('/blogs/:id', blogCtrl.findBlog)
       .del('/blogs/:blogId', checkToken, blogCtrl.deleteBolg)
       .put('/blogs/:blogId', checkToken, blogCtrl.updateBlog)
 module.exports = router

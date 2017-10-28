@@ -15,6 +15,10 @@ module.exports = {
   // 根据用户id查找用户
   findUser: async ctx => {
     const {id} = ctx.params
+    // 检测是否是合法的objectid
+    if (!validator.isMongoId(id)) {
+      return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
+    }
     const data = await userModel.findOne({_id: id}, {password: 0})
     ctx.success({data})
   },

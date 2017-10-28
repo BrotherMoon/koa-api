@@ -32,9 +32,22 @@ module.exports = {
         const data = await newBlog.save()
         return data ? ctx.success({data, status: 201}) : ctx.error({msg: 'create failed', code: 1008})
     },
-    // 查找博客
+    // 根据博客id查找博客
+    findBlog: async ctx => {
+      const {id} = ctx.params
+      // 检测是否是合法的objectid
+      if (!validator.isMongoId(id)) {
+        return ctx.error({msg: 'invalid blogId', code: 1002, status: 400})
+      }
+      const data = await blogModel.findOne({_id: id}).populate({path: 'author', select: {password: 0}})
+      ctx.success({data})
+    },
+    // 根据关键字或作者的id查找博客
     findBlogs: async ctx => {
         const {keyword, author} = ctx.query
+        let {skip, limit} = ctx.query
+        skip = parseInt(skip) || 0
+        limit= parseInt(limit) || 10
         const regex = new RegExp(keyword, 'i')
         let whereStr = {
           $or: [
@@ -42,8 +55,22 @@ module.exports = {
             {content: {$regex: regex}}
           ]
         }
-        const data = await blogModel.find(whereStr).populate({path: 'author', select: {password: 0}}).sort({createdAt: -1})
-        ctx.success({data})
+        author && Object.assign(whereStr, {author})
+        // 查询博客总数
+        const total = await blogModel.count()
+        // 按条件查找博客
+        const data = await blogModel
+          .find(whereStr)
+          .limit(limit)
+          .skip(skip)
+          .populate({path: 'author', select: {password: 0}})
+          .sort({createdAt: -1})
+        ctx.success({data: {
+          skip,
+          limit,
+          total,
+          blogs: data
+        }})
     },
     // 更新博客内容
     updateBlog: async ctx => {

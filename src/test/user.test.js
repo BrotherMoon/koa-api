@@ -146,6 +146,11 @@ describe('testing user api', () => {
       .get(`/users/111111111111111111111111`)
       .expect(204, done)
     })
+    it(`should get 400 and invalid userId warning`, (done) => {
+      request()
+      .get(`/users/11111`)
+      .expect(400, done)
+    })
   })
   // 测试用户登录接口
   describe('POST /users/login', () => {
