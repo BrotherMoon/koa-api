@@ -57,7 +57,7 @@ module.exports = {
         }
         author && Object.assign(whereStr, {author})
         // 查询博客总数
-        const total = await blogModel.count()
+        const total = await blogModel.count(whereStr)
         // 按条件查找博客
         const data = await blogModel
           .find(whereStr)

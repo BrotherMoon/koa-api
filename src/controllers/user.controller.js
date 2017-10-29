@@ -1,11 +1,20 @@
 const validator = require('validator')
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
+const uuidv1 = require('uuid/v1')
 const userModel = require('../models/user.model')
 const blogModel = require('../models/blog.model')
 const config = require('../../config')
 const ERROR_MESSAGE = require('../utils/const')
 const helper = require('../utils/helper')
+const qn = require('qn')
+const client = qn.create({
+  accessKey: config.qn.accessKey,
+  secretKey: config.qn.secretKey,
+  bucket: 'blog',
+  uploadURL: 'http://up-z2.qiniu.com/',
+})
 module.exports = {
   // 查找所有用户
   findUsers: async ctx => {
@@ -69,7 +78,7 @@ module.exports = {
     if (!data)
       return ctx.error({msg: 'user not found', code: 1003, status: 400})
     if (data.password !== password)
-      return ctx.error({msg: 'wrong password', code: 1004})
+      return ctx.error({msg: ERROR_MESSAGE.USER.WRONG_PASSWORD, code: 1004})
     // 删除password属性，防止密码泄露
     data = _.omit(data, 'password')
     // 创建并返回后续用于请求验证的token以及用户信息
@@ -83,17 +92,18 @@ module.exports = {
   },
   // 更新用户信息
   updateUser: async ctx => {
-    console.log(ctx._id)
     const userId = ctx._id
-    const {password, active, profile, avatar} = ctx.request.body
+    const {password, active, profile, avatar, oldPassword} = ctx.request.body
     // 检测是否是合法的objectid
     if (!validator.isMongoId(userId)) {
       return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
     }
     // 参数校验
     let argError = ''
-    if (password && (!_.isString(password) || password.trim().length < 6)) {
-     argError = ERROR_MESSAGE.USER.ILLEGAL_PASSWORD
+    if (password) {
+      if ((!_.isString(password) || password.trim().length < 6)) {
+        argError = ERROR_MESSAGE.USER.ILLEGAL_PASSWORD
+      }
    } else if (active && _.isNil([0, 1].find(num => num == active))) {
      argError =  ERROR_MESSAGE.USER.ILLEGAL_ACTIVE
    } else if (profile && profile.trim().length > 30) {
@@ -101,12 +111,19 @@ module.exports = {
    }
     if (argError)
       return ctx.error({msg: argError, code: 1002})
+    // 如果是修改密码则先进行旧密码校验
+    if (password) {
+      const target = await userModel.findOne({_id: userId})
+      if (oldPassword !== target.password) {
+        return ctx.error({status: 400, code: 1004, msg: ERROR_MESSAGE.USER.WRONG_PASSWORD})
+      }
+    }
     let updateStr = {password, active, profile, avatar}
     // 剔除没有传入的参数
     updateStr = _.omitBy(updateStr, _.isNil)
     // {new: true}表示更新成功后会返回更新后的信息，默认为false
-    const data = await userModel.findByIdAndUpdate(userId, updateStr, {new: true})
-    !_.isEmpty(data) ? ctx.success({status: 202, data}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
+    const data = await userModel.findByIdAndUpdate(userId, updateStr, {new: true, lean: true})
+    !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
   },
   // 删除用户
   deleteUser: async ctx => {
@@ -126,11 +143,19 @@ module.exports = {
       return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
     }
     const data = await blogModel.aggregate([
-      {$match: {author: userId}},
+      {$match: {author: mongoose.Types.ObjectId(userId)}},
       {$group: {_id: '$tag', num: {$sum: 1}}}
     ])
+    console.log(data)
     // 在结果中查询是否有‘无标签’这一默认标签，若无，填充该集合
     !_.find(data, tag => tag._id === '无标签') && data.push({_id: '无标签', num: 0})
     ctx.success({data})
+  },
+  // 上传头像
+  uploadAvatar: async ctx => {
+    const {avatar} = ctx.request.body
+    client.upload(avatar, {key: `${uuidv1()}`}, function (err, result) {
+      console.log(result)
+    })
   }
 }
