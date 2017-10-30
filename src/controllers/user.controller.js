@@ -8,13 +8,8 @@ const blogModel = require('../models/blog.model')
 const config = require('../../config')
 const ERROR_MESSAGE = require('../utils/const')
 const helper = require('../utils/helper')
-const qn = require('qn')
-const client = qn.create({
-  accessKey: config.qn.accessKey,
-  secretKey: config.qn.secretKey,
-  bucket: 'blog',
-  uploadURL: 'http://up-z2.qiniu.com/',
-})
+const qn = require('../utils/qn')
+const fs = require('fs')
 module.exports = {
   // 查找所有用户
   findUsers: async ctx => {
@@ -153,9 +148,12 @@ module.exports = {
   },
   // 上传头像
   uploadAvatar: async ctx => {
-    const {avatar} = ctx.request.body
-    client.upload(avatar, {key: `${uuidv1()}`}, function (err, result) {
-      console.log(result)
-    })
+    const userId = ctx._id
+    const {avatar} = ctx.request.body.files
+    const temPath = avatar.path
+    const reader = fs.createReadStream(temPath)
+    const newPath = await qn.upload(reader)
+    const data = await userModel.findByIdAndUpdate(userId, {avatar: newPath}, {new: true, lean: true})
+    return !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
   }
 }

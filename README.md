@@ -33,3 +33,4 @@
 | 1007  | update failed | 更新资源失败 | 400 |
 | 1008  | create failed | 创建资源失败 | 400 |
 | 1009  | email has been used | 邮箱已被注册使用 | 400 |
+| 1010  | fileupload failed | 文件上传失败 | 400 |

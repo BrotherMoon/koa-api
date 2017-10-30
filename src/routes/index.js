@@ -10,7 +10,7 @@ router.get('/users', userCtrl.findUsers)
       .put('/users/:userId', checkToken, userCtrl.updateUser)
       .del('/users/:userId', checkToken, userCtrl.deleteUser)
       .get('/users/:userId/tags', userCtrl.findTagsAndBogNum)
-      .post('/avatar', userCtrl.uploadAvatar)
+      .post('/avatar', checkToken, userCtrl.uploadAvatar)
 /*博客文章相关路由*/
 router.post('/blogs', checkToken, blogCtrl.createBlog)
       .get('/blogs', blogCtrl.findBlogs)

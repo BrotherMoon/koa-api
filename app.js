@@ -1,7 +1,7 @@
 const Koa = require('koa')
 const app = new Koa()
 const json = require('koa-json')
-const bodyParser = require('koa-bodyparser')
+const koaBody = require('koa-body')
 const convert = require('koa-convert')
 const logger = require('koa-logger')
 const onerror = require('koa-onerror')
@@ -14,7 +14,7 @@ onerror(app)
 // 格式化 response json
 app.use(json())
 // 解析http请求体
-app.use(bodyParser())
+app.use(koaBody({multipart: true}))
 // log
 app.use(convert(logger()))
 // cors允许跨域
