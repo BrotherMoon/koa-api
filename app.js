@@ -9,8 +9,11 @@ const config = require('./config')
 const router = require('./src/routes')
 const cors = require('koa-cors')
 const koaStatic = require('koa-static')
+const compress = require('koa-compress')
 // 报错
 onerror(app)
+// gzip压缩
+app.use(compress())
 // 格式化 response json
 app.use(json())
 // 解析http请求体
