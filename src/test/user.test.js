@@ -7,10 +7,8 @@ const config = require('../../config')
 const userModel = require('../models/user.model')
 const ERROR_MESSAGE = require('../utils/const')
 const request = () => supertest(app.listen())
-// 创建模拟token
-const token = jwt.sign({
-  id: '89124819023j12jsadas'
-}, config.tokenSecret, {expiresIn: 100})
+let token1 = ''
+let token2 = '' 
 let userForTest1 = {
   name: 'testUser1',
   password: '123456',
@@ -26,10 +24,18 @@ describe('testing user api', () => {
     // 先尝试删除含有测试用户名的用户账号，防止因测试中断数据残留造成测试失败
     userModel.remove({name: {$in: [userForTest1.name, userForTest2.name]}}, (err, result) => {
       const testUser = new userModel(userForTest1)
-      testUser.save((err, result) => done())
+      testUser.save((err, result) => {
+        if (!err) {
+          Object.assign(userForTest1, result.toJSON())
+          token1 = jwt.sign({
+            _id: result._id
+          }, config.tokenSecret, {expiresIn: 100})
+          done()
+        }
+      })
     })
   })
-  // 最后删除这个测试用户
+  // 最后删除测试用户1
   after((done) => {
     userModel.remove({name: userForTest1.name}, (err, result) => done())
   })
@@ -42,7 +48,10 @@ describe('testing user api', () => {
       .expect(201)
       .end((err, res) => {
         res.body.should.have.property('name', userForTest2.name)
-        Object.assign(userForTest2, {_id: res.body._id})
+        Object.assign(userForTest2, res.body)
+        token2 = jwt.sign({
+          _id: res.body._id
+        }, config.tokenSecret, {expiresIn: 100})
         done(err)
       })
     })
@@ -146,6 +155,11 @@ describe('testing user api', () => {
       .get(`/users/111111111111111111111111`)
       .expect(204, done)
     })
+    it(`should get 400 and invalid userId warning`, (done) => {
+      request()
+      .get(`/users/11111`)
+      .expect(400, done)
+    })
   })
   // 测试用户登录接口
   describe('POST /users/login', () => {
@@ -190,14 +204,23 @@ describe('testing user api', () => {
     it('should get 400 and the invalid password warning', (done) => {
       request()
       .put(`/users/${userForTest2._id}`)
+      .set('authorization', token2)
       .send({password: 111111})
       .expect(400, done)
     })
     it('should get 202 and the updated user info', (done) => {
       request()
-      .put(`/users/${userForTest2._id}`)
-      .send({password: '111111'})
+      .put(`/users/${userForTest1._id}`)
+      .set('authorization', token1)
+      .send({password: '123456', oldPassword: userForTest1.password})
       .expect(202, done)
+    })
+    it('should get 400 and the wrong password warning', (done) => {
+      request()
+      .put(`/users/${userForTest1._id}`)
+      .set('authorization', token1)
+      .send({password: '123456', oldPassword: `${userForTest1.password}1`})
+      .expect(400, done)
     })
   })
   // 测试删除用户接口
@@ -205,13 +228,13 @@ describe('testing user api', () => {
     it(`should get 204`, (done) => {
       request()
       .delete(`/users/${userForTest2._id}`)
-      .set('authorization', token)
+      .set('authorization', token2)
       .expect(204, done)
     })
     it(`should get 400 and invalid userId warning`, (done) => {
       request()
       .delete(`/users/${uuid()}`)
-      .set('authorization', token)
+      .set('authorization', token2)
       .expect(400)
       .end((err, res) => {
         res.body.should.have.property('msg', 'invalid userId')
@@ -222,7 +245,7 @@ describe('testing user api', () => {
     it(`should get 404 and user not found warning`, (done) => {
       request()
       .delete(`/users/111111111111111111111111`)
-      .set('authorization', token)
+      .set('authorization', token2)
       .expect(404)
       .end((err, res) => {
         res.body.should.have.property('msg', 'user not found')

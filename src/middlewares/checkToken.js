@@ -8,6 +8,7 @@ module.exports = async(ctx, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, config.tokenSecret)
+      ctx._id = decoded._id
       return next()
     } catch (err) {
       return ctx.error({msg: err.message, code: 1001, status: 401})

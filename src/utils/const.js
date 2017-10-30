@@ -6,7 +6,8 @@ module.exports = {
     ILLEGAL_PROFILE: 'the length of profile no more than 30',
     ILLEGAL_EMAIL: 'illegal email',
     USER_EXISTS: 'username already exists',
-    EMAIL_USED: 'email has been used'
+    EMAIL_USED: 'email has been used',
+    WRONG_PASSWORD: 'wrong password'
   },
   BLOG: {
     ILLEGAL_TITLE: 'the length of title no more than 30 and it must be string',
