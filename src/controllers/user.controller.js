@@ -156,8 +156,19 @@ module.exports = {
     const reader = fs.createReadStream(temPath)
     // 上传至七牛
     const newPath = await qn.upload(reader)
-    // 更新数据库
+    // 将新的头像路径更新至数据库
     const data = await userModel.findByIdAndUpdate(userId, {avatar: newPath}, {new: true, lean: true})
     return !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
+  },
+  // 给已注册的用户邮箱发送登录密码
+  sendMailWithPWd: async ctx => {
+    const {email} = ctx.params
+    const data = await userModel.findOne({email})
+    if (!_.isEmpty(data)) {
+      const mailId = await helper.sendMail({to: email, p1: `您的密码为 <b>${data.password}</b>`, p2: '^_^....'})
+      return ctx.success({data: mailId})
+    } else {
+      ctx.error({msg: 'user not found', code: 1006, status: 404})
+    }
   }
 }

@@ -22,7 +22,7 @@ describe('testing user api', () => {
   // 先创建一个测试用户
   before((done) => {
     // 先尝试删除含有测试用户名的用户账号，防止因测试中断数据残留造成测试失败
-    userModel.remove({name: {$in: [userForTest1.name, userForTest2.name]}}, (err, result) => {
+    userModel.remove({$or: [{name: {$in: [userForTest1.name, userForTest2.name]}}, {email: '810077182@qq.com'}]}, (err, result) => {
       const testUser = new userModel(userForTest1)
       testUser.save((err, result) => {
         if (!err) {
@@ -262,6 +262,19 @@ describe('testing user api', () => {
       .set('authorization', token1)
       .attach('avatar', './src/static/fun.png')
       .expect(202, done)
+    })
+  })
+  // 测试找回密码接口
+  describe('GET /forgot/:email', () => {
+    it(`should get 200`, (done) => {
+      request()
+      .get('/forgot/842390367@qq.com')
+      .expect(200, done)
+    })
+    it(`should get 404`, (done) => {
+      request()
+      .get('/forgot/110@qq.com')
+      .expect(404, done)
     })
   })
 })
