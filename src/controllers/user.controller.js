@@ -150,9 +150,13 @@ module.exports = {
   uploadAvatar: async ctx => {
     const userId = ctx._id
     const {avatar} = ctx.request.body.files
+    // 获取文件缓存地址
     const temPath = avatar.path
+    // 创建读取流
     const reader = fs.createReadStream(temPath)
+    // 上传至七牛
     const newPath = await qn.upload(reader)
+    // 更新数据库
     const data = await userModel.findByIdAndUpdate(userId, {avatar: newPath}, {new: true, lean: true})
     return !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
   }

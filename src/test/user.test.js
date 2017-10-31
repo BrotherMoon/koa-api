@@ -254,4 +254,14 @@ describe('testing user api', () => {
       })
     })
   })
+  // 测试更换头像接口
+  describe('POST /avatar', () => {
+    it(`should get 202`, (done) => {
+      request()
+      .post(`/avatar`)
+      .set('authorization', token1)
+      .attach('avatar', './src/static/fun.png')
+      .expect(202, done)
+    })
+  })
 })
