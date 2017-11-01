@@ -1,5 +1,17 @@
 # Koa Api
 个人项目中使用到的restful api接口
+## 启动安装
+先安装配置好nodejs, mongodb环境
+```
+// 克隆项目，并且将config文件夹中的index.temp.js重命名为index.js并且填入对应的配置
+$git clone 
+// 安装依赖
+$npm i
+// 启动开发模式
+$npm run dev
+// 运行单元测试
+$npm test
+```
 ## Api response status codes说明
 | 状态码  | 含义                    | 说明                 |
 | ---- | --------------------- | ------------------ |
@@ -12,7 +24,9 @@
 | 403  | FORBIDDEN             | 被禁止访问              |
 | 404  | NOT FOUND             | 请求的资源不存在           |
 | 500  | INTERNAL SERVER ERROR | 服务器内部错误            |
-## 发生错误时，HTTP Status Code为4xx时
+
+## 发生错误时，HTTP Status Code为4xx时的通用错误码
+
 响应格式为
 ```
 {
@@ -20,7 +34,7 @@
   msg:"uri_not_found"
 }
 ```
-## 通用错误码
+
 | 状态码 code  | 错误信息         | 含义     | status code |
 | ---- | --------- | --------- | ------------ |
 | 1000  | UNAUTHORIZED | 没有权限 | 401 |

@@ -265,15 +265,15 @@ describe('testing user api', () => {
     })
   })
   // 测试找回密码接口
-  describe('GET /forgot/:email', () => {
+  describe('GET /password/:email', () => {
     it(`should get 200`, (done) => {
       request()
-      .get('/forgot/842390367@qq.com')
+      .get('/password/842390367@qq.com')
       .expect(200, done)
     })
     it(`should get 404`, (done) => {
       request()
-      .get('/forgot/110@qq.com')
+      .get('/password/110@qq.com')
       .expect(404, done)
     })
   })

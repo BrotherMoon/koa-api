@@ -11,7 +11,7 @@ router.get('/users', userCtrl.findUsers)
       .del('/users/:userId', checkToken, userCtrl.deleteUser)
       .get('/users/:userId/tags', userCtrl.findTagsAndBogNum)
       .post('/avatar', checkToken, userCtrl.uploadAvatar)
-      .get('/forgot/:email', userCtrl.sendMailWithPWd)
+      .get('/password/:email', userCtrl.sendMailWithPWd)
 /*博客文章相关路由*/
 router.post('/blogs', checkToken, blogCtrl.createBlog)
       .get('/blogs', blogCtrl.findBlogs)
