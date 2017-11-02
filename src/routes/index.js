@@ -1,9 +1,11 @@
 const router = require('koa-router')()
 const userCtrl = require('../controllers/user.controller')
 const blogCtrl = require('../controllers/blog.controller')
+const serviceCtrl = require('../controllers/service.controller')
 const checkToken = require('../middlewares/checkToken')
 /*用户相关路由*/
-router.get('/users', userCtrl.findUsers)
+router
+      .get('/users', userCtrl.findUsers)
       .get('/users/:id', userCtrl.findUser)
       .post('/users', userCtrl.createUser)
       .post('/users/login', userCtrl.login)
@@ -13,9 +15,13 @@ router.get('/users', userCtrl.findUsers)
       .post('/avatar', checkToken, userCtrl.uploadAvatar)
       .get('/password/:email', userCtrl.sendMailWithPWd)
 /*博客文章相关路由*/
-router.post('/blogs', checkToken, blogCtrl.createBlog)
+router
+      .post('/blogs', checkToken, blogCtrl.createBlog)
       .get('/blogs', blogCtrl.findBlogs)
       .get('/blogs/:id', blogCtrl.findBlog)
       .del('/blogs/:blogId', checkToken, blogCtrl.deleteBolg)
       .put('/blogs/:blogId', checkToken, blogCtrl.updateBlog)
+/*微服务相关路由*/
+router
+      .get('/weather', serviceCtrl.getWeather)
 module.exports = router

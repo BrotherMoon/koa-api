@@ -10,6 +10,7 @@
   "author": "xuwenchao",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.17.0",
     "compression": "^1.7.1",
     "istanbul": "^1.0.0-alpha.2",
     "jsonwebtoken": "^7.4.1",

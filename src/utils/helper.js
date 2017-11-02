@@ -31,7 +31,21 @@ const sendMail = ({to, p1, p2}) => {
     })
   })
 }
-module.exports = {sendMail}
-// sendMail({to: '842390367@qq.com', p1: 'hahah <b>123123<b>', 'p2': 'shabuiasd'})
-//   .then(id => console.log('Message sent: %s', id))
-//   .catch(err => console.error(err))
+/**
+ * [obj2FormData 把传入的对象转换成formdata]
+ */
+const obj2FormData = (obj) => {
+  let formdata = new FormData()
+  Object.keys(obj).forEach(i => formdata.append(i, obj[i]))
+  return formdata
+}
+// 解析json字符串
+const parseJSON = (str) => {
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    console.log(`^.^  parse json error: ${e}`)
+    return {}
+  }
+}
+module.exports = {sendMail, obj2FormData, parseJSON}
