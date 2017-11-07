@@ -5,16 +5,7 @@ const baseURL = config.requestUrl
 // 设置默认请求超时时间为10s
 axios.defaults.timeout = 10000
 axios.interceptors.response.use(response => response, (error) => {
-  if (error.response) {
-    return Promise.reject(error.response)
-  }
-  if (error.request) {
-    return Promise.reject(error.request)
-  }
-  if (error.message) {
-    return Promise.reject(error.message)
-  }
-  return Promise.reject(error.config)
+  return Promise.reject(error)
 })
 module.exports = {
   /**
@@ -28,9 +19,7 @@ module.exports = {
   post(url, data, {
     baseURLIndex = 0,
     successCb,
-    errorCb,
-    authorization = false,
-    formData = false
+    errorCb
   } = {}) {
     formData && (data = obj2FormData(data))
     let options = {
@@ -39,11 +28,6 @@ module.exports = {
       data,
       baseURL: baseURL[baseURLIndex]
     }
-    authorization && Object.assign(options, {
-      headers: {
-        authorization: 'koa-api'
-      }
-    })
     return axios(options).then((res) => {
       successCb && successCb(res)
       return res
@@ -64,8 +48,7 @@ module.exports = {
   get(url, data, {
     baseURLIndex = 0,
     successCb,
-    errorCb,
-    authorization = false
+    errorCb
   } = {}) {
     let options = {
       method: 'get',
@@ -73,11 +56,6 @@ module.exports = {
       params: data,
       baseURL: baseURL[baseURLIndex]
     }
-    authorization && Object.assign(options, {
-      headers: {
-        authorization: 'koa-api'
-      }
-    })
     return axios(options).then((res) => {
       successCb && successCb(res)
       return res
@@ -93,8 +71,7 @@ module.exports = {
   delete(url, data, {
     baseURLIndex = 0,
     successCb,
-    errorCb,
-    authorization = false
+    errorCb
   } = {}) {
     let options = {
       method: 'delete',
@@ -102,11 +79,6 @@ module.exports = {
       data,
       baseURL: baseURL[baseURLIndex]
     }
-    authorization && Object.assign(options, {
-      headers: {
-        authorization: 'koa-api'
-      }
-    })
     return axios(options).then((res) => {
       successCb && successCb(res)
       return res
@@ -123,7 +95,6 @@ module.exports = {
     baseURLIndex = 0,
     successCb,
     errorCb,
-    authorization = false
   } = {}) {
     let options = {
       method: 'put',
@@ -131,11 +102,6 @@ module.exports = {
       data,
       baseURL: baseURL[baseURLIndex]
     }
-    authorization && Object.assign(options, {
-      headers: {
-        authorization: 'koa-api'
-      }
-    })
     return axios(options).then((res) => {
       successCb && successCb(res)
       return res

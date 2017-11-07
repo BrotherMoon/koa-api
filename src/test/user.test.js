@@ -18,7 +18,8 @@ let userForTest2 = {
   name: 'testUser2',
   email:'810077182@qq.com'
 }
-describe('testing user api', () => {
+describe('testing user api', function() {
+  this.timeout(200000)
   // 先创建一个测试用户
   before((done) => {
     // 先尝试删除含有测试用户名的用户账号，防止因测试中断数据残留造成测试失败
