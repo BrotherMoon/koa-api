@@ -6,7 +6,8 @@ const uuidv1 = require('uuid/v1')
 const userModel = require('../models/user.model')
 const blogModel = require('../models/blog.model')
 const config = require('../../config')
-const ERROR_MESSAGE = require('../utils/const')
+const U_E = require('../utils/const').USER_ERROR
+const C_E = require('../utils/const').COMMON_ERROR
 const helper = require('../utils/helper')
 const qn = require('../utils/qn')
 const fs = require('fs')
@@ -21,7 +22,7 @@ module.exports = {
     const {id} = ctx.params
     // 检测是否是合法的objectid
     if (!validator.isMongoId(id)) {
-      return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
+      return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
     }
     const data = await userModel.findOne({_id: id}, {password: 0})
     ctx.success({data})
@@ -34,22 +35,22 @@ module.exports = {
     if (!name) {
       argError = 'missing name'
     } else if (!validator.isLength(name.trim(), {min: 3, max: 15})) {
-      argError = ERROR_MESSAGE.USER.ILLEGAL_NAME
+      argError = U_E.ILLEGAL_NAME[0]
     } else if (!email) {
       argError = 'missing email'
     } else if (!validator.isEmail(email)) {
-      argError = ERROR_MESSAGE.USER.ILLEGAL_EMAIL
+      argError = U_E.ILLEGAL_EMAIL[0]
     }
     if (argError)
-      return ctx.error({msg: argError, code: 1002})
+      return ctx.error({msg: argError, code: C_E.ILLEGAL_PARAMETER[1]})
     // 根据name查找是否已经存在该用户名
     const namedUser = await userModel.findOne({name})
     if (!_.isEmpty(namedUser))
-      return ctx.error({msg: ERROR_MESSAGE.USER.USER_EXISTS, code: 1005})
+      return ctx.error({msg: U_E.USER_EXISTS[0], code: U_E.USER_EXISTS[1]})
     // 根据email查看该邮箱是否已经被注册使用
     const mailedUser = await userModel.findOne({email})
     if (!_.isEmpty(mailedUser))
-      return ctx.error({msg: ERROR_MESSAGE.USER.EMAIL_USED, code: 1009})
+      return ctx.error({msg: U_E.EMAIL_USED[0], code: U_E.EMAIL_USED[1]})
     // 生成由6位随机数字组成的字符串作为初始密码
     const initPwd = _.sampleSize([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 6).join('')
     // 创建用户
@@ -73,7 +74,7 @@ module.exports = {
     if (!data)
       return ctx.error({msg: 'user not found', code: 1003, status: 400})
     if (data.password !== password)
-      return ctx.error({msg: ERROR_MESSAGE.USER.WRONG_PASSWORD, code: 1004})
+      return ctx.error({msg: U_E.WRONG_PASSWORD[0], code: U_E.WRONG_PASSWORD[1]})
     // 删除password属性，防止密码泄露
     data = _.omit(data, 'password')
     // 创建并返回后续用于请求验证的token以及用户信息
@@ -91,18 +92,18 @@ module.exports = {
     const {password, active, profile, avatar, oldPassword} = ctx.request.body
     // 检测是否是合法的objectid
     if (!validator.isMongoId(userId)) {
-      return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
+      return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
     }
     // 参数校验
     let argError = ''
     if (password) {
       if ((!_.isString(password) || password.trim().length < 6)) {
-        argError = ERROR_MESSAGE.USER.ILLEGAL_PASSWORD
+        argError = U_E.ILLEGAL_PASSWORD[0]
       }
    } else if (active && _.isNil([0, 1].find(num => num == active))) {
-     argError =  ERROR_MESSAGE.USER.ILLEGAL_ACTIVE
+     argError =  U_E.ILLEGAL_ACTIVE[0]
    } else if (profile && profile.trim().length > 30) {
-     argError = ERROR_MESSAGE.USER.ILLEGAL_PROFILE
+     argError = U_E.ILLEGAL_PROFILE[0]
    }
     if (argError)
       return ctx.error({msg: argError, code: 1002})
@@ -110,7 +111,7 @@ module.exports = {
     if (password) {
       const target = await userModel.findOne({_id: userId})
       if (oldPassword !== target.password) {
-        return ctx.error({status: 400, code: 1004, msg: ERROR_MESSAGE.USER.WRONG_PASSWORD})
+        return ctx.error({msg: U_E.WRONG_PASSWORD[0], code: U_E.WRONG_PASSWORD[1]})
       }
     }
     let updateStr = {password, active, profile, avatar}
@@ -125,7 +126,7 @@ module.exports = {
     const {userId} = ctx.params
     // 检测是否是合法的objectid
     if (!validator.isMongoId(userId)) {
-      return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
+      return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
     }
     const data = await userModel.findOneAndRemove({_id: userId})
     !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: 'user not found', code: 1006, status: 404})
@@ -135,7 +136,7 @@ module.exports = {
     const {userId} = ctx.params
     // 检测是否是合法的objectid
     if (!validator.isMongoId(userId)) {
-      return ctx.error({msg: 'invalid userId', code: 1002, status: 400})
+      return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
     }
     const data = await blogModel.aggregate([
       {$match: {author: mongoose.Types.ObjectId(userId)}},

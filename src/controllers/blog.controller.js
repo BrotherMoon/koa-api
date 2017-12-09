@@ -3,7 +3,8 @@ const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const config = require('../../config')
 const blogModel = require('../models/blog.model')
-const ERROR_MESSAGE = require('../utils/const')
+const B_E = require('../utils/const').BLOG_ERROR
+const C_E = require('../utils/const').COMMON_ERROR
 module.exports = {
     // 新建一篇博客
     createBlog: async ctx => {
@@ -14,19 +15,19 @@ module.exports = {
         if (!title) {
           argError = 'title is required'
         } else if (!_.isString(title) || title.trim().length > 30){
-          argError = ERROR_MESSAGE.BLOG.ILLEGAL_TITLE
+          argError = B_E.ILLEGAL_TITLE[0]
         } else if (!content) {
           argError = 'content is required'
         } else if (!_.isString(content) || !content.trim().length > 0) {
-          argError = ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT
+          argError = B_E.ILLEGAL_CONTENT[0]
         } else if (public && _.isNil([0, 1].find(num => num == public))) {
-          argError = ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC
+          argError = B_E.ILLEGAL_PUBLIC[0]
         } else if (tag) {
           if (!_.isString(tag) || !validator.isLength(tag.trim(), {min: 1, max: 10})) {
-            argError = ERROR_MESSAGE.BLOG.ILLEGAL_TAG
+            argError = B_E.ILLEGAL_TAG[0]
           }
         }
-        if (argError) return ctx.error({msg: argError, code: 1002})
+        if (argError) return ctx.error({msg: argError, code: C_E.ILLEGAL_PARAMETER[1]})
         // 创建博客
         const newBlog = new blogModel({title, author, content, tag, public})
         const data = await newBlog.save()
@@ -37,7 +38,7 @@ module.exports = {
       const {id} = ctx.params
       // 检测是否是合法的objectid
       if (!validator.isMongoId(id)) {
-        return ctx.error({msg: 'invalid blogId', code: 1002, status: 400})
+        return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
       }
       const data = await blogModel.findOne({_id: id}).populate({path: 'author', select: {password: 0}})
       ctx.success({data})
@@ -79,26 +80,26 @@ module.exports = {
       const {title, content, tag, public} = ctx.request.body
       // 检测是否是合法的objectid
       if (!validator.isMongoId(blogId)) {
-        return ctx.error({msg: 'invalid blogId', code: 1002, status: 400})
+        return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
       }
       // 参数校验
       let argError = ''
       if (title) {
         if (!_.isString(title) || title.trim().length > 30){
-          argError = ERROR_MESSAGE.BLOG.ILLEGAL_TITLE
+          argError = B_E.ILLEGAL_TITLE[0]
         }
       } else if (content) {
         if (!_.isString(content) || !content.trim().length > 0) {
-          argError = ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT
+          argError = B_E.ILLEGAL_CONTENT[0]
         }
       } else if (public && _.isNil([0, 1].find(num => num == public))) {
-        argError = ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC
+        argError = B_E.ILLEGAL_PUBLIC[0]
       } else if (tag) {
         if (!_.isString(tag) || !validator.isLength(tag.trim(), {mix: 1, max: 15})) {
-          argError = ERROR_MESSAGE.BLOG.ILLEGAL_TAG
+          argError = B_E.ILLEGAL_TAG[0]
         }
       }
-      if (argError) return ctx.error({msg: argError, code: 1002})
+      if (argError) return ctx.error({msg: argError, code: C_E.ILLEGAL_PARAMETER[1]})
       let updateStr = {title, content, public, tag}
       // 剔除没有传入的参数
       updateStr = _.omitBy(updateStr, _.isNil)
@@ -112,7 +113,7 @@ module.exports = {
         const {blogId} = ctx.params
         // 检测是否是合法的objectid
         if (!validator.isMongoId(blogId)) {
-          return ctx.error({msg: 'invalid blogId', code: 1002, status: 400})
+          return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
         }
         const data = await blogModel.findOneAndRemove({_id: blogId, author: userId})
         !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: 'blog not found', code: 1006, status: 404})

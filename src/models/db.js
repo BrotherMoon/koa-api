@@ -1,16 +1,23 @@
 const mongoose = require('mongoose')
 const config = require('../../config')
+// 创建连接
 mongoose.connect(config.mongo.uri)
-// 连接成功
-mongoose.connection.on('connected', function () {
-    console.log('Mongoose connection connected')
-})
-// 连接失败
-mongoose.connection.on('error', function (err) {
-    console.log('Mongoose connection error: ' + err)
-})
-// 断开连接
-mongoose.connection.on('disconnected', function () {
-    console.log('Mongoose connection disconnected')
-})
+// 连接成功回调
+mongoose
+    .connection
+    .on('connected', () => {
+        console.log('Mongoose connection connected')
+    })
+// 连接失败回调
+mongoose
+    .connection
+    .on('error', (err) => {
+        console.log(`Mongoose connection error: ${err}`)
+    })
+// 断开连接回调
+mongoose
+    .connection
+    .on('disconnected', () => {
+        console.log('Mongoose connection disconnected')
+    })
 module.exports = mongoose

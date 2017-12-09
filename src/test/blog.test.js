@@ -6,7 +6,8 @@ const app = require('../../app')
 const config = require('../../config')
 const userModel = require('../models/user.model')
 const blogModel = require('../models/blog.model')
-const ERROR_MESSAGE = require('../utils/const')
+const B_E = require('../utils/const').BLOG_ERROR
+const C_E = require('../utils/const').COMMON_ERROR
 const request = () => supertest(app.listen())
 let userForTest = {
   name: 'testUser',
@@ -75,8 +76,8 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TITLE)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_TITLE[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_TITLE[1])
         done()
       })
     })
@@ -102,8 +103,8 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_CONTENT[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_CONTENT[1])
         done()
       })
     })
@@ -118,8 +119,8 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_PUBLIC[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_PUBLIC[1])
         done()
       })
     })
@@ -134,8 +135,8 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
         done()
       })
     })
@@ -150,8 +151,8 @@ describe('testing blog api', () => {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
         done()
       })
     })
@@ -207,8 +208,8 @@ describe('testing blog api', () => {
       .send({title: 'uaS8DUJ09ASJDPAJSPODJKPOASKJDASJK;DJKASAsdNLKNMLKMLK'})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TITLE)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_TITLE[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_TITLE[1])
         done()
       })
     })
@@ -219,8 +220,8 @@ describe('testing blog api', () => {
       .send({content: ' '})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_CONTENT)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_CONTENT[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_CONTENT[1])
         done()
       })
     })
@@ -231,8 +232,8 @@ describe('testing blog api', () => {
       .send({public: 'haha'})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_PUBLIC)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_PUBLIC[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_PUBLIC[1])
         done()
       })
     })
@@ -243,8 +244,8 @@ describe('testing blog api', () => {
       .send({tag: 'my note 123123123123123123123'})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
         done()
       })
     })
@@ -255,8 +256,8 @@ describe('testing blog api', () => {
       .send({tag: 123})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.BLOG.ILLEGAL_TAG)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
+        res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
         done()
       })
     })
@@ -275,8 +276,8 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'invalid blogId')
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', C_E.INVALID_MONGOID[0])
+        res.body.should.have.property('code', C_E.INVALID_MONGOID[1])
         done(err)
       })
     })

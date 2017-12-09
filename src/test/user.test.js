@@ -5,7 +5,8 @@ const uuid = require('uuid/v1')
 const app = require('../../app')
 const config = require('../../config')
 const userModel = require('../models/user.model')
-const ERROR_MESSAGE = require('../utils/const')
+const U_E = require('../utils/const').USER_ERROR
+const C_E = require('../utils/const').COMMON_ERROR
 const request = () => supertest(app.listen())
 let token1 = ''
 let token2 = '' 
@@ -65,8 +66,8 @@ describe('testing user api', function() {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.USER.USER_EXISTS)
-        res.body.should.have.property('code', 1005)
+        res.body.should.have.property('msg', U_E.USER_EXISTS[0])
+        res.body.should.have.property('code', U_E.USER_EXISTS[1])
         done(err)
       })
     })
@@ -79,8 +80,8 @@ describe('testing user api', function() {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.USER.EMAIL_USED)
-        res.body.should.have.property('code', 1009)
+        res.body.should.have.property('msg', U_E.EMAIL_USED[0])
+        res.body.should.have.property('code', U_E.EMAIL_USED[1])
         done(err)
       })
     })
@@ -101,8 +102,8 @@ describe('testing user api', function() {
       .send({name: '12345678901234566', emaill: '123456@qq.com'})
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.USER.ILLEGAL_NAME)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', U_E.ILLEGAL_NAME[0])
+        res.body.should.have.property('code', U_E.ILLEGAL_NAME[1])
         done(err)
       })
     })
@@ -126,8 +127,8 @@ describe('testing user api', function() {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', ERROR_MESSAGE.USER.ILLEGAL_EMAIL)
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', U_E.ILLEGAL_EMAIL[0])
+        res.body.should.have.property('code', U_E.ILLEGAL_EMAIL[1])
         done(err)
       })
     })
@@ -238,8 +239,8 @@ describe('testing user api', function() {
       .set('authorization', token2)
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'invalid userId')
-        res.body.should.have.property('code', 1002)
+        res.body.should.have.property('msg', C_E.INVALID_MONGOID[0])
+        res.body.should.have.property('code', C_E.INVALID_MONGOID[1])
         done(err)
       })
     })
