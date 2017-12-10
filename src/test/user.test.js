@@ -195,8 +195,8 @@ describe('testing user api', function() {
       })
       .expect(400)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'user not found')
-        res.body.should.have.property('code', 1003)
+        res.body.should.have.property('msg', C_E.NOT_FOUND[0])
+        res.body.should.have.property('code', C_E.NOT_FOUND[1])
         done(err)
       })
     })
@@ -250,8 +250,8 @@ describe('testing user api', function() {
       .set('authorization', token2)
       .expect(404)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'user not found')
-        res.body.should.have.property('code', 1006)
+        res.body.should.have.property('msg', C_E.NOT_FOUND[0])
+        res.body.should.have.property('code', C_E.NOT_FOUND[1])
         done(err)
       })
     })

@@ -31,7 +31,7 @@ module.exports = {
         // 创建博客
         const newBlog = new blogModel({title, author, content, tag, public})
         const data = await newBlog.save()
-        return data ? ctx.success({data, status: 201}) : ctx.error({msg: 'create failed', code: 1008})
+        return data ? ctx.success({data, status: 201}) : ctx.error({msg: C_E.CREATE_FAILED[0], code: C_E.CREATE_FAILED[1]})
     },
     // 根据博客id查找博客
     findBlog: async ctx => {
@@ -105,7 +105,7 @@ module.exports = {
       updateStr = _.omitBy(updateStr, _.isNil)
       // {new: true}表示更新成功后会返回更新后的信息，默认为false
       const data = await blogModel.findOneAndUpdate({_id: blogId, author: userId}, updateStr, {new: true})
-      !_.isEmpty(data) ? ctx.success({status: 202, data}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
+      !_.isEmpty(data) ? ctx.success({status: 202, data}) : ctx.error({code: C_E.UPDATE_FAILED[1], msg: C_E.UPDATE_FAILED[0]})
     },
     // 根据博客id删除博客
     deleteBolg: async ctx => {
@@ -116,6 +116,6 @@ module.exports = {
           return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
         }
         const data = await blogModel.findOneAndRemove({_id: blogId, author: userId})
-        !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: 'blog not found', code: 1006, status: 404})
+        !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: C_E.NOT_FOUND[0], code: C_E.NOT_FOUND[1], status: 404})
     }
 }

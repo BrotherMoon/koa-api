@@ -1,7 +1,18 @@
 module.exports = {
   COMMON_ERROR: {
-    ILLEGAL_PARAMETER: ['illegal parameter', 1002],
-    INVALID_MONGOID:['invalid mongoId', 1002]
+    ILLEGAL_PARAMETER: [
+      'illegal parameter', 1002
+    ],
+    INVALID_MONGOID: [
+      'invalid mongoId', 1002
+    ],
+    CREATE_FAILED: [
+      'create failed', 1008
+    ],
+    NOT_FOUND: [
+      'resource not found', 1006
+    ],
+    UPDATE_FAILED: ['update failed', 1007]
   },
   USER_ERROR: {
     ILLEGAL_NAME: [
@@ -38,5 +49,10 @@ module.exports = {
       'public need to be one of 0 and 1', 1002
     ],
     ILLEGAL_TAG: ['tag must be a string and the length of tag must between 1 and 15', 1002]
+  },
+  TODO_ERROR: {
+    ILLEGAL_LIST_TITLE: [
+      'the length of title no more than 20 and it must be string', 1002
+    ]
   }
 }

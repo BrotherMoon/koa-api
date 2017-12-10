@@ -1,15 +1,24 @@
 const mongoose = require('./db')
 const Schema = mongoose.Schema
-const TodoSchema = new Schema({
-  listName: {type: String, required: true},
-  user: {type: Schema.Types.ObjectId, ref: 'user', required: true},
-  todos: [{
-    title: {type: String, required: true},
-    description: {type: String},
-    star: {type: Number, default: 0},
-    done: {type: Number, default: 0}
-  }]
+const TodoListSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
+  },
+  list: [
+    {
+      title: {
+        type: String,
+        required: true
+      }
+    }
+  ]
 }, {
-    versionKey: false,
-    timestamps: true
+  versionKey: false,
+  timestamps: true
 })
+const todoListModel = mongoose.model('todoList', TodoListSchema, 'todoLists')
+module.exports = {
+  todoListModel
+}

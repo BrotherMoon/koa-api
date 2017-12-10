@@ -3,6 +3,7 @@ const userCtrl = require('../controllers/user.controller')
 const blogCtrl = require('../controllers/blog.controller')
 const serviceCtrl = require('../controllers/service.controller')
 const checkToken = require('../middlewares/checkToken')
+const todoCtrl = require('../controllers/todo.controller')
 /*用户相关路由*/
 router
       .get('/users', userCtrl.findUsers)
@@ -24,4 +25,7 @@ router
 /*微服务相关路由*/
 router
       .get('/weather', serviceCtrl.getWeather)
+// todo清单路由
+router
+      .post('/todo/list', checkToken, todoCtrl.createTodoList)
 module.exports = router

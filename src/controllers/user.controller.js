@@ -63,7 +63,7 @@ module.exports = {
       helper.sendMail({to: email, p1: `您的初始密码为 <b>${initPwd}</b>`, p2: '为了保证您的账号安全,请在登录后及时修改密码并且删除该邮件'})
       return ctx.success({data, status: 201})
     } else {
-      return ctx.error({msg: 'create failed', code: 1008})
+      return ctx.error({msg: C_E.CREATE_FAILED[0], code: C_E.CREATE_FAILED[1]})
     }
   },
   // 用户登录
@@ -72,7 +72,7 @@ module.exports = {
     // 根据name查找用户, 设置lean: true可以把mongoose包装返回的不可修改对象转换为一个可修改的object
     let data = await userModel.findOne({email}, null, {lean: true})
     if (!data)
-      return ctx.error({msg: 'user not found', code: 1003, status: 400})
+      return ctx.error({msg: C_E.NOT_FOUND[0], code: C_E.NOT_FOUND[1]})
     if (data.password !== password)
       return ctx.error({msg: U_E.WRONG_PASSWORD[0], code: U_E.WRONG_PASSWORD[1]})
     // 删除password属性，防止密码泄露
@@ -119,7 +119,7 @@ module.exports = {
     updateStr = _.omitBy(updateStr, _.isNil)
     // {new: true}表示更新成功后会返回更新后的信息，默认为false
     const data = await userModel.findByIdAndUpdate(userId, updateStr, {new: true, lean: true})
-    !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
+    !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({code: C_E.UPDATE_FAILED[1], msg: C_E.UPDATE_FAILED[0]})
   },
   // 删除用户
   deleteUser: async ctx => {
@@ -129,7 +129,7 @@ module.exports = {
       return ctx.error({msg: C_E.INVALID_MONGOID[0], code: C_E.INVALID_MONGOID[1]})
     }
     const data = await userModel.findOneAndRemove({_id: userId})
-    !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: 'user not found', code: 1006, status: 404})
+    !_.isEmpty(data) ? ctx.success({status: 204}) : ctx.error({msg: C_E.NOT_FOUND[0], code: C_E.NOT_FOUND[1], status: 404})
   },
   // 找出该用户的所有博客标签以及对应标签下的博客数量
   findTagsAndBogNum: async ctx => {
@@ -159,7 +159,7 @@ module.exports = {
     const newPath = await qn.upload(reader)
     // 将新的头像路径更新至数据库
     const data = await userModel.findByIdAndUpdate(userId, {avatar: newPath}, {new: true, lean: true})
-    return !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({status: 400, code: 1007, msg: 'update failed'})
+    return !_.isEmpty(data) ? ctx.success({status: 202, data: _.omit(data, 'password')}) : ctx.error({code: C_E.UPDATE_FAILED[1], msg: C_E.UPDATE_FAILED[0]})
   },
   // 给已注册的用户邮箱发送登录密码
   sendMailWithPWd: async ctx => {
@@ -169,7 +169,7 @@ module.exports = {
       const mailId = await helper.sendMail({to: email, p1: `您的密码为 <b>${data.password}</b>`, p2: '^_^....'})
       return ctx.success({data: mailId})
     } else {
-      ctx.error({msg: 'user not found', code: 1006, status: 404})
+      ctx.error({msg: C_E.NOT_FOUND[0], code: C_E.NOT_FOUND[1], status: 404})
     }
   }
 }

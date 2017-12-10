@@ -287,8 +287,8 @@ describe('testing blog api', () => {
       .set('authorization', token)
       .expect(404)
       .end((err, res) => {
-        res.body.should.have.property('msg', 'blog not found')
-        res.body.should.have.property('code', 1006)
+        res.body.should.have.property('msg', C_E.NOT_FOUND[0])
+        res.body.should.have.property('code', C_E.NOT_FOUND[1])
         done(err)
       })
     })
