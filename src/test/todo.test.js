@@ -18,28 +18,28 @@ let token = ''
 describe('testing todo api', () => {
   // 查找用户,若不存在则创建用户
   before((done) => {
-    userModel
-      .findOne({name: 'testUser'})
-      .then(result => {
-        if (result) {
-          return result
-        } else {
+    (async() => {
+      try {
+        // 先查找是否存在测试用户
+        let user = await userModel.findOne({name: 'testUser'})
+        // 若不存在创建
+        if (!user) {
           const testUser = new userModel(userForTest)
-          return testUser.save()
+          user = await testUser.save()
         }
-      })
-      .then(result => {
-        Object.assign(userForTest, {_id: result._id})
-        // 创建模拟token
+        // 模拟登录创建token
+        Object.assign(userForTest, {_id: user._id})
         token = jwt.sign({
-          _id: result._id
+          _id: user._id
         }, config.tokenSecret, {
           expiresIn: 60 * 5
         })
         console.log('Toekn by testUser for test ->', token)
         done()
-      })
-      .catch(err => console.error(err))
+      } catch (error) {
+        done(error)
+      }
+    })()
   })
   // 测试创建todo清单接口
   describe('POST /todo/list', () => {
@@ -52,7 +52,7 @@ describe('testing todo api', () => {
         .end((err, res) => {
           res.body.should.have.property('user')
           res.body.should.have.property('list')
-          done()
+          done(err)
         })
     })
   })

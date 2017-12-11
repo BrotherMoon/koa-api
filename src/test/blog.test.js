@@ -19,24 +19,26 @@ let token = ''
 describe('testing blog api', () => {
   // 查找用户,若不存在则创建用户
   before((done) => {
-    userModel.findOne({name: 'testUser'}).then(result => {
-      if (result) {
-        return result
-      } else {
-        const testUser = new userModel(userForTest)
-        return testUser.save()
+    (async () => {
+      try {
+        // 先查找是否存在测试用户
+        let user = await userModel.findOne({name: 'testUser'})
+        // 若不存在创建
+        if (!user) {
+          const testUser = new userModel(userForTest)
+          user = await testUser.save()
+        }
+        // 模拟登录创建token
+        Object.assign(userForTest, {_id: user._id})
+        token = jwt.sign({
+          _id: user._id
+        }, config.tokenSecret, {expiresIn: 60 * 5})
+        console.log('Toekn by testUser for test ->', token)
+        done()
+      } catch (error) {
+       done(error) 
       }
-    })
-    .then(result => {
-      Object.assign(userForTest, {_id: result._id})
-      // 创建模拟token
-      token = jwt.sign({
-        _id: result._id
-      }, config.tokenSecret, {expiresIn: 60 * 5})
-      console.log('Toekn by testUser for test ->', token)
-      done()
-    })
-    .catch(err => console.error(err))
+    })()
   })
   // 测试创建博客接口
   describe('POST /blogs', () => {
@@ -51,7 +53,7 @@ describe('testing blog api', () => {
       .expect(201)
       .end((err, res) => {
         Object.assign(blog, res.body)
-        done()
+        done(err)
       })
     })
     it('should get 400 and missing title waring', (done) => {
@@ -63,7 +65,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', 'title is required')
         res.body.should.have.property('code', 1002)
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal title waring', (done) => {
@@ -78,7 +80,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_TITLE[0])
         res.body.should.have.property('code', B_E.ILLEGAL_TITLE[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and missing content waring', (done) => {
@@ -90,7 +92,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', 'content is required')
         res.body.should.have.property('code', 1002)
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal content waring', (done) => {
@@ -105,7 +107,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_CONTENT[0])
         res.body.should.have.property('code', B_E.ILLEGAL_CONTENT[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal public waring', (done) => {
@@ -121,7 +123,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_PUBLIC[0])
         res.body.should.have.property('code', B_E.ILLEGAL_PUBLIC[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal tag waring', (done) => {
@@ -137,7 +139,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
         res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal tag waring', (done) => {
@@ -153,7 +155,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
         res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
-        done()
+        done(err)
       })
     })
   })
@@ -188,7 +190,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('blogs')
         res.body.should.have.property('total')
-        done()
+        done(err)
       })
     })
   })
@@ -210,7 +212,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_TITLE[0])
         res.body.should.have.property('code', B_E.ILLEGAL_TITLE[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal content waring', (done) => {
@@ -222,7 +224,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_CONTENT[0])
         res.body.should.have.property('code', B_E.ILLEGAL_CONTENT[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal public waring', (done) => {
@@ -234,7 +236,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_PUBLIC[0])
         res.body.should.have.property('code', B_E.ILLEGAL_PUBLIC[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal tag waring', (done) => {
@@ -246,7 +248,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
         res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
-        done()
+        done(err)
       })
     })
     it('should get 400 and illegal tag waring', (done) => {
@@ -258,7 +260,7 @@ describe('testing blog api', () => {
       .end((err, res) => {
         res.body.should.have.property('msg', B_E.ILLEGAL_TAG[0])
         res.body.should.have.property('code', B_E.ILLEGAL_TAG[1])
-        done()
+        done(err)
       })
     })
   })

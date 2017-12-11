@@ -24,18 +24,18 @@ describe('testing user api', function() {
   // 先创建一个测试用户
   before((done) => {
     // 先尝试删除含有测试用户名的用户账号，防止因测试中断数据残留造成测试失败
-    userModel.remove({$or: [{name: {$in: [userForTest1.name, userForTest2.name]}}, {email: '810077182@qq.com'}]}, (err, result) => {
-      const testUser = new userModel(userForTest1)
-      testUser.save((err, result) => {
-        if (!err) {
-          Object.assign(userForTest1, result.toJSON())
-          token1 = jwt.sign({
-            _id: result._id
-          }, config.tokenSecret, {expiresIn: 100})
-          done()
-        }
-      })
-    })
+    (async () => {
+      try {
+        await userModel.remove({$or: [{name: {$in: [userForTest1.name, userForTest2.name]}}, {email: '810077182@qq.com'}]})
+        const testUser = new userModel(userForTest1)
+        const result = await testUser.save()
+        Object.assign(userForTest1, result.toJSON())
+        token1 = jwt.sign({_id: result._id}, config.tokenSecret, {expiresIn: 100})
+        done()
+      } catch (error) {
+        done(error)
+      }
+    })()
   })
   // 最后删除测试用户1
   after((done) => {
