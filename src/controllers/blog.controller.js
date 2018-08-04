@@ -46,7 +46,7 @@ module.exports = {
     // 根据关键字或作者的id查找博客
     findBlogs: async ctx => {
         const {keyword, author} = ctx.query
-        let {skip, limit} = ctx.query
+        let {skip, limit, tag} = ctx.query
         skip = parseInt(skip) || 0
         limit= parseInt(limit) || 10
         const regex = new RegExp(keyword, 'i')
@@ -57,6 +57,7 @@ module.exports = {
           ]
         }
         author && Object.assign(whereStr, {author})
+        tag && Object.assign(whereStr, {tag})
         // 查询博客总数
         const total = await blogModel.count(whereStr)
         // 按条件查找博客
